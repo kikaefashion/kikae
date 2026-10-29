@@ -1,0 +1,10 @@
+# Testing conventions
+
+- Test behavior, not implementation. Query by role, label, or text — never by testID.
+- Every screen tests loading, error, empty, and populated states.
+- All network calls are mocked with typed MSW handlers (response bodies typed from app types via `z.infer` or generated types).
+- No whole-screen snapshot tests.
+- No `any` in tests (enforced by `@typescript-eslint/no-explicit-any`).
+- Every bug fix ships with a regression test.
+- A test must fail if the feature it covers is broken.
+- When a new feature folder is added, it must be added to `collectCoverageFrom` in `jest.config.js` in the same PR, together with tests.
