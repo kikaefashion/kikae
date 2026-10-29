@@ -1,0 +1,57 @@
+name: Preview
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update:
+    name: Publish EAS Update preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for EXPO_TOKEN
+        id: check-token
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "EXPO_TOKEN is not set. Skipping EAS Update preview."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repository
+        if: steps.check-token.outputs.publish == 'true'
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        if: steps.check-token.outputs.publish == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.check-token.outputs.publish == 'true'
+        run: npm ci
+
+      - name: Set up EAS
+        if: steps.check-token.outputs.publish == 'true'
+        uses: expo/expo-github-action@v9
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Publish preview
+        if: steps.check-token.outputs.publish == 'true'
+        uses: expo/expo-github-action/preview@v9
+        with:
+          command: eas update --auto
