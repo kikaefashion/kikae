@@ -91,6 +91,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     extra: {
       appEnv: env,
       apiBaseUrl: envConfig.apiBaseUrl,
+      eas: {
+        projectId: '9e8a2d23-197e-4feb-8f45-ce53f1573419',
+      },
       // TODO: After running `npx eas-cli init`, add the EAS project id here:
       //   eas: { projectId: '<your-project-id>' }
       // TODO: After running `npx eas-cli update:configure`, add `updates.url` and `runtimeVersion`.
