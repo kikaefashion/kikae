@@ -1,0 +1,24 @@
+{
+  "advisories": {
+    "1243066": {
+      "package": "zod",
+      "severity": "high",
+      "title": "Zod can exhaust memory while validating oversized constrained collections",
+      "reason": "Transitive via expo > @expo/cli > zod@3.25.76. No zod 3.x patch exists and the latest @expo/cli (58.1.17) still pins zod@^3.25.76. The app's own zod dependency is already the patched 4.6.7. The DoS only affects the local build/dev CLI, not the shipped app.",
+      "url": "https://github.com/advisories/GHSA-mrhx-c7xc-m3w5",
+      "paths": ["expo > @expo/cli > zod"]
+    },
+    "1243505": {
+      "package": "deepmerge",
+      "severity": "low",
+      "title": "deepmerge mergeObject() allows prototype poisoning of returned objects",
+      "reason": "Transitive via expo (@expo/config) and jest (jest-config). No patch available upstream. Low severity, build/test tooling only.",
+      "url": "https://github.com/advisories/GHSA-gcqx-w48m-w2h4",
+      "paths": [
+        "expo > @expo/config > deepmerge",
+        "jest > @jest/core > jest-config > deepmerge",
+        "jest > jest-cli > @jest/core > jest-config > deepmerge"
+      ]
+    }
+  }
+}

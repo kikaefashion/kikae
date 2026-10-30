@@ -66,7 +66,7 @@ jobs:
         run: npx expo-doctor
 
       - name: Audit dependencies
-        run: yarn audit --level high
+        run: node scripts/check-audit.js
 
   web-build:
     name: Web build
