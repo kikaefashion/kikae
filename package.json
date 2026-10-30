@@ -1,6 +1,7 @@
 {
   "name": "kikae",
   "version": "1.0.0",
+  "packageManager": "yarn@1.22.22",
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/ui": "~58.0.25",
@@ -60,7 +61,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --ci --coverage",
     "test:watch": "jest --watch",
-    "validate": "npm run typecheck && npm run lint && npm run test",
+    "validate": "yarn typecheck && yarn lint && yarn test",
     "prepare": "husky"
   },
   "private": true

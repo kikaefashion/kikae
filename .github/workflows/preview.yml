@@ -37,11 +37,11 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: npm
+          cache: yarn
 
       - name: Install dependencies
         if: steps.check-token.outputs.publish == 'true'
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Set up EAS
         if: steps.check-token.outputs.publish == 'true'
