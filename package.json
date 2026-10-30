@@ -1,12 +1,15 @@
 {
   "name": "kikae",
   "version": "1.0.0",
+  "packageManager": "yarn@1.22.22",
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/ui": "~58.0.25",
+    "@react-native/jest-preset": "^0.88.1",
     "@tanstack/react-query": "^5.105.0",
     "expo": "~58.0.21",
     "expo-constants": "~58.0.14",
+    "expo-dev-client": "~58.0.17",
     "expo-device": "~58.0.5",
     "expo-font": "~58.0.11",
     "expo-glass-effect": "~58.0.5",
@@ -17,6 +20,7 @@
     "expo-status-bar": "~58.0.4",
     "expo-symbols": "~58.0.4",
     "expo-system-ui": "~58.0.7",
+    "expo-updates": "~58.0.19",
     "expo-web-browser": "~58.0.7",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -58,7 +62,8 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --ci --coverage",
     "test:watch": "jest --watch",
-    "validate": "npm run typecheck && npm run lint && npm run test",
+    "validate": "yarn typecheck && yarn lint && yarn test",
+    "audit": "node scripts/check-audit.js",
     "prepare": "husky"
   },
   "private": true

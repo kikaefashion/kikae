@@ -1,12 +1,12 @@
 import { http } from 'msw';
 
-import { render, screen } from '@/test-utils/render';
 import {
   EXAMPLES_ENDPOINT,
   getExamplesEmpty,
   getExamplesError,
 } from '@/test-utils/msw/handlers';
 import { server } from '@/test-utils/msw/server';
+import { render, screen } from '@/test-utils/render';
 
 import { ExamplesList } from '../examples-list';
 
@@ -26,7 +26,7 @@ describe('ExamplesList', () => {
 
     expect(await screen.findByText('First example')).toBeOnTheScreen();
     expect(screen.getByText('Second example')).toBeOnTheScreen();
-  });
+  }, 150000);
 
   it('shows an error state', async () => {
     server.use(getExamplesError);

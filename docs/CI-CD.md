@@ -30,11 +30,14 @@
 
 ### `ci.yml` — runs on pull requests and pushes to `main`
 
-| Job           | What it does                                                                                 |
-| ------------- | -------------------------------------------------------------------------------------------- |
-| `quality`     | `npm ci`, then typecheck, lint, and test (with coverage); uploads `coverage/` as an artifact |
-| `expo-health` | `npx expo-doctor` and `npm audit --audit-level=high`                                         |
-| `web-build`   | `npx expo export --platform web`; uploads `dist/` as an artifact                             |
+| Job           | What it does                                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------------------- |
+| `quality`     | `npm ci`, then typecheck, lint, and test (with coverage); uploads `coverage/` as an artifact            |
+| `expo-health` | `npx expo-doctor` and `node scripts/check-audit.js` (wraps `yarn audit --level high` with an allowlist) |
+| `web-build`   | `npx expo export --platform web`; uploads `dist/` as an artifact                                        |
+
+Dependency auditing uses `scripts/check-audit.js`, which fails only on advisories not listed in
+`audit-allowlist.json`. Accepted advisories are documented in [`docs/security.md`](security.md).
 
 ### `preview.yml` — runs on pull requests
 
@@ -67,7 +70,9 @@ For the disabled store-submission step, later:
 
 1. Install and authenticate the CLI: `npx eas-cli login`.
 2. Link the project: `npx eas-cli init` — then add the generated project id to `extra.eas.projectId` in `app.config.ts`.
-3. Configure EAS Update: `npx eas-cli update:configure` — then add `updates.url` and `runtimeVersion` to `app.config.ts`.
+3. Configure EAS Update. `npx eas-cli update:configure` cannot auto-write a dynamic `app.config.ts`,
+   so set `updates.url` and `runtimeVersion` directly in `app.config.ts` and add a `channel` to the
+   build profiles in `eas.json`.
 4. Install the dev client for development builds: `npx expo install expo-dev-client`.
 5. Create at least one preview/dev build so EAS Update has a binary to target.
 

@@ -55,6 +55,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     icon: './assets/images/icon.png',
     scheme: 'kikae',
     userInterfaceStyle: 'automatic',
+    runtimeVersion: { policy: 'appVersion' },
+    updates: {
+      url: 'https://u.expo.dev/9e8a2d23-197e-4feb-8f45-ce53f1573419',
+    },
     ios: {
       icon: './assets/expo.icon',
       bundleIdentifier: envConfig.bundleIdentifier,
@@ -91,9 +95,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     extra: {
       appEnv: env,
       apiBaseUrl: envConfig.apiBaseUrl,
-      // TODO: After running `npx eas-cli init`, add the EAS project id here:
-      //   eas: { projectId: '<your-project-id>' }
-      // TODO: After running `npx eas-cli update:configure`, add `updates.url` and `runtimeVersion`.
+      eas: {
+        projectId: '9e8a2d23-197e-4feb-8f45-ce53f1573419',
+      },
     },
   };
 };
