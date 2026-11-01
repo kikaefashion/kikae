@@ -24,9 +24,16 @@ export const tokenStorage: TokenStorage = {
     return window.localStorage.getItem(TOKEN_KEY);
   },
   async setToken(token) {
+    // Guard for static/server rendering where `window` is unavailable.
+    if (typeof window === 'undefined') {
+      return;
+    }
     window.localStorage.setItem(TOKEN_KEY, token);
   },
   async removeToken() {
+    if (typeof window === 'undefined') {
+      return;
+    }
     window.localStorage.removeItem(TOKEN_KEY);
   },
 };

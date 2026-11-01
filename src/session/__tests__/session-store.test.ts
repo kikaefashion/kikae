@@ -2,10 +2,12 @@ import { clearSession } from '@/api/identity';
 
 import {
   endSession,
+  getSessionStatus,
   getUserId,
   hasSession,
   persistSession,
   restoreSession,
+  subscribe,
 } from '../session-store';
 import { tokenStorage } from '../token-storage';
 
@@ -65,5 +67,39 @@ describe('session-store', () => {
     expect(mockRemoveToken).toHaveBeenCalled();
     expect(hasSession()).toBe(false);
     expect(getUserId()).toBeNull();
+  });
+
+  it('transitions to signedIn when a token is restored', async () => {
+    mockGetToken.mockResolvedValue('persisted-token');
+
+    await restoreSession();
+
+    expect(getSessionStatus()).toBe('signedIn');
+  });
+
+  it('transitions to signedOut when nothing is persisted', async () => {
+    mockGetToken.mockResolvedValue(null);
+
+    await restoreSession();
+
+    expect(getSessionStatus()).toBe('signedOut');
+  });
+
+  it('transitions to signedOut on endSession', async () => {
+    await persistSession({ token: 't', userId: 42 });
+
+    await endSession();
+
+    expect(getSessionStatus()).toBe('signedOut');
+  });
+
+  it('notifies subscribers when the status changes', async () => {
+    const listener = jest.fn();
+    const unsubscribe = subscribe(listener);
+
+    await persistSession({ token: 't', userId: 42 });
+
+    expect(listener).toHaveBeenCalled();
+    unsubscribe();
   });
 });

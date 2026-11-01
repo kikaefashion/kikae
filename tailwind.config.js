@@ -74,7 +74,11 @@ function buildFontWeight() {
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
-  darkMode: 'media',
+  // `class` (rather than `media`) so a user override can be added later via a
+  // `.dark` class + NativeWind's `colorScheme.set()`. System is still the
+  // default: `src/global.css` flips the `--kikae-*` vars on
+  // `@media (prefers-color-scheme: dark)` and under `.dark`.
+  darkMode: 'class',
   theme: {
     colors: {
       transparent: 'transparent',
