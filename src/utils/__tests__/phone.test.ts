@@ -18,6 +18,11 @@ describe('normalizeNigerianPhone', () => {
     expect(normalizeNigerianPhone('0903-869-2680')).toBe('+2349038692680');
   });
 
+  it('accepts the backend comma-separated format', () => {
+    expect(normalizeNigerianPhone('234,8000000000')).toBe('+2348000000000');
+    expect(normalizeNigerianPhone('2348000000000')).toBe('+2348000000000');
+  });
+
   it('returns null for invalid lengths', () => {
     expect(normalizeNigerianPhone('123')).toBeNull();
     expect(normalizeNigerianPhone('')).toBeNull();

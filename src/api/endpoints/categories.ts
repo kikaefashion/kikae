@@ -5,16 +5,32 @@ import { id } from '../helpers';
 
 /**
  * `/v2/categories` (GET, public) — returns
- * `{ status, message, data: ProductCategory[] }`. Categories also eager-load
- * `subcategories → productTypes`; those are passed through and UNVERIFIED.
+ * `{ status, message, data: ProductCategory[] }` with nested
+ * `subcategories → productTypes`. Everything is keyed by `id` (names repeat
+ * across parents, so never key by name).
  */
-export const ProductCategorySchema = z
+
+const ProductTypeSchema = z
   .object({
     id,
     name: z.string(),
-    description: z.string().nullable().optional(),
   })
   .passthrough();
+
+const ProductSubcategorySchema = z
+  .object({
+    id,
+    name: z.string(),
+    productTypes: z.array(ProductTypeSchema).optional().default([]),
+  })
+  .passthrough();
+
+export const ProductCategorySchema = z.object({
+  id,
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  subcategories: z.array(ProductSubcategorySchema).optional().default([]),
+});
 
 export const ProductCategoryListSchema = z.array(ProductCategorySchema);
 

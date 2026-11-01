@@ -1,4 +1,4 @@
-import { bool, dateTime, id, money } from '../helpers';
+import { bool, dateOnly, dateTime, id, money } from '../helpers';
 
 describe('Zod API helpers', () => {
   it('bool coerces 0/1 (int or string), null and booleans', () => {
@@ -33,5 +33,12 @@ describe('Zod API helpers', () => {
       '2024-01-07T12:00:00.000+01:00',
     );
     expect(() => dateTime.parse('not-a-date')).toThrow();
+  });
+
+  it('dateOnly normalizes the unset sentinel and null to null', () => {
+    expect(dateOnly.parse('1990-05-20')).toBe('1990-05-20');
+    expect(dateOnly.parse('1970-01-01')).toBeNull();
+    expect(dateOnly.parse(null)).toBeNull();
+    expect(() => dateOnly.parse('not-a-date')).toThrow();
   });
 });

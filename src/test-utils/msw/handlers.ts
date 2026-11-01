@@ -11,13 +11,35 @@ export const currentUser: CurrentUser = {
   fname: 'Ada',
   lname: 'Okafor',
   email: 'ada@example.com',
+  phone: '234,8000000000',
+  profilePic: null,
+  dob: '1990-05-20',
   usertype_id: 1,
   status: true,
+  usertype: { id: 1, name: 'Customer', store_id: null },
+  addresses: [
+    {
+      id: 1,
+      address: '12 Marina',
+      state_id: 25,
+      city: 'Lagos',
+      isDefault: true,
+    },
+  ],
+  followings: [],
+  user_badge: ['New User'],
 };
 
 export const categories: ProductCategory[] = [
-  { id: 1, name: 'Fashion', description: null },
-  { id: 2, name: 'Beauty', description: null },
+  {
+    id: 1,
+    name: 'Fashion',
+    description: null,
+    subcategories: [
+      { id: 11, name: 'Men', productTypes: [{ id: 111, name: 'Shirts' }] },
+    ],
+  },
+  { id: 2, name: 'Beauty', description: null, subcategories: [] },
 ];
 
 export const getCurrentUserSuccess = http.post(`${API_URL}/currentUser`, () =>

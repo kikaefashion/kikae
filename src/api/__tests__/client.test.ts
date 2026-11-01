@@ -99,7 +99,13 @@ describe('API client', () => {
   it('parses a raw object without a responder envelope', async () => {
     server.use(
       http.post(`${API_URL}/currentUser`, () =>
-        HttpResponse.json({ id: 1, fname: 'Ada', lname: 'Okafor' }),
+        HttpResponse.json({
+          id: 1,
+          fname: 'Ada',
+          lname: 'Okafor',
+          email: 'ada@example.com',
+          usertype_id: 1,
+        }),
       ),
     );
 

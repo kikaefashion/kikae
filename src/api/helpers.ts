@@ -28,9 +28,19 @@ export const money = z
 /** Ids: bigint auto-increment → number; `stores.id` / `products.store_id` → UUID string. */
 export const id = z.union([z.number(), z.string()]);
 
-/** Timestamps: accept both UTC `Z` and any ±HH:MM offset; keep the raw string. */
+/** Timestamps: UTC ISO-8601 strings ending in `Z` (verified against real payloads). */
 export const dateTime = z
   .string()
   .refine((value) => !Number.isNaN(Date.parse(value)), {
     message: 'invalid date-time',
   });
+
+/**
+ * Date-only `YYYY-MM-DD`. The backend uses `"1970-01-01"` to mean "unset";
+ * normalize that (and `null`) to `null` so the app never sees the sentinel.
+ */
+export const dateOnly = z
+  .union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.null()])
+  .transform((value) =>
+    value === '1970-01-01' || value === null ? null : value,
+  );
