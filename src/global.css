@@ -1,9 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
+    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono,
+    Courier New, monospace;
+  --font-rounded:
+    'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic',
+    sans-serif;
   --font-serif: Georgia, 'Times New Roman', serif;
+
+  /* Kikae tokens — light */
+  --kikae-canvas: #fafafa;
+  --kikae-surface: #ffffff;
+  --kikae-surface-overlay: #ffffff;
+  --kikae-line: #e5e5e5;
+  --kikae-line-strong: #737373;
+  --kikae-divider: #e5e5e5;
+  --kikae-fg: #171717;
+  --kikae-fg-secondary: #404040;
+  --kikae-fg-muted: #525252;
+  --kikae-fg-disabled: #a3a3a3;
+  --kikae-fg-placeholder: #737373;
+  --kikae-on-primary: #ffffff;
+  --kikae-on-primary-disabled: #525252;
+  --kikae-primary: #000000;
+  --kikae-primary-pressed: #262626;
+  --kikae-primary-disabled: #d4d4d4;
+  --kikae-icon: #171717;
+  --kikae-icon-muted: #525252;
+  --kikae-skeleton: #e5e5e5;
+  --kikae-scrim: rgba(0, 0, 0, 0.6);
+  --kikae-modal-backdrop: rgba(0, 0, 0, 0.5);
+  --kikae-success: #1b7f4a;
+  --kikae-warning: #8a5a00;
+  --kikae-error: #b3261e;
+  --kikae-info: #1b5e8a;
+}
+
+/* Kikae tokens — dark (manual `.dark` class for later toggle support). */
+.dark {
+  --kikae-canvas: #0a0a0a;
+  --kikae-surface: #171717;
+  --kikae-surface-overlay: #262626;
+  --kikae-line: #404040;
+  --kikae-line-strong: #737373;
+  --kikae-divider: #262626;
+  --kikae-fg: #fafafa;
+  --kikae-fg-secondary: #d4d4d4;
+  --kikae-fg-muted: #a3a3a3;
+  --kikae-fg-disabled: #525252;
+  --kikae-fg-placeholder: #a3a3a3;
+  --kikae-on-primary: #000000;
+  --kikae-on-primary-disabled: #a3a3a3;
+  --kikae-primary: #ffffff;
+  --kikae-primary-pressed: #e5e5e5;
+  --kikae-primary-disabled: #404040;
+  --kikae-icon: #fafafa;
+  --kikae-icon-muted: #a3a3a3;
+  --kikae-skeleton: #262626;
+  --kikae-scrim: rgba(0, 0, 0, 0.6);
+  --kikae-modal-backdrop: rgba(0, 0, 0, 0.5);
+  --kikae-success: #4ade80;
+  --kikae-warning: #ffd699;
+  --kikae-error: #f2b8b5;
+  --kikae-info: #9bd0f5;
+}
+
+/* Kikae tokens — dark via system preference (default). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --kikae-canvas: #0a0a0a;
+    --kikae-surface: #171717;
+    --kikae-surface-overlay: #262626;
+    --kikae-line: #404040;
+    --kikae-line-strong: #737373;
+    --kikae-divider: #262626;
+    --kikae-fg: #fafafa;
+    --kikae-fg-secondary: #d4d4d4;
+    --kikae-fg-muted: #a3a3a3;
+    --kikae-fg-disabled: #525252;
+    --kikae-fg-placeholder: #a3a3a3;
+    --kikae-on-primary: #000000;
+    --kikae-on-primary-disabled: #a3a3a3;
+    --kikae-primary: #ffffff;
+    --kikae-primary-pressed: #e5e5e5;
+    --kikae-primary-disabled: #404040;
+    --kikae-icon: #fafafa;
+    --kikae-icon-muted: #a3a3a3;
+    --kikae-skeleton: #262626;
+    --kikae-scrim: rgba(0, 0, 0, 0.6);
+    --kikae-modal-backdrop: rgba(0, 0, 0, 0.5);
+    --kikae-success: #4ade80;
+    --kikae-warning: #ffd699;
+    --kikae-error: #f2b8b5;
+    --kikae-info: #9bd0f5;
+  }
 }

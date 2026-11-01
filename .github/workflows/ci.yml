@@ -85,6 +85,10 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Export web build
+        env:
+          EXPO_PUBLIC_AUTH_URL: ${{ vars.EXPO_PUBLIC_AUTH_URL }}
+          EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
+          EXPO_PUBLIC_MEDIA_URL_PREFIX: ${{ vars.EXPO_PUBLIC_MEDIA_URL_PREFIX }}
         run: npx expo export --platform web
 
       - name: Upload web build

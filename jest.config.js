@@ -28,8 +28,13 @@ module.exports = {
   },
 
   collectCoverageFrom: [
-    'src/examples/**/*.{ts,tsx}',
-    '!src/examples/**/__tests__/**',
+    'src/theme/**/*.{ts,tsx}',
+    'src/config/**/*.{ts,tsx}',
+    'src/utils/**/*.{ts,tsx}',
+    'src/api/**/*.{ts,tsx}',
+    'src/session/**/*.{ts,tsx}',
+    'src/providers/**/*.{ts,tsx}',
+    '!src/**/__tests__/**',
     '!**/*.test.{ts,tsx}',
     '!**/*.d.ts',
   ],
