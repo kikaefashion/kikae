@@ -75,10 +75,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     web: {
       output: 'server',
+      bundler: 'metro',
       favicon: './assets/images/favicon.png',
     },
     plugins: [
       'expo-router',
+      'expo-secure-store',
       [
         'expo-splash-screen',
         {
