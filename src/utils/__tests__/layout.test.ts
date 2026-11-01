@@ -32,8 +32,6 @@ describe('computeColumns', () => {
   });
 
   it('uses the 24px gap at lg+ and the 16px gap below', () => {
-    // Below lg the 16px gap yields 5 columns at 864; at lg+ the 24px gap caps
-    // the same content width differently — verify the clamp floor is applied.
     expect(computeColumns(864)).toBeGreaterThanOrEqual(2);
     expect(computeColumns(1024)).toBe(5);
   });

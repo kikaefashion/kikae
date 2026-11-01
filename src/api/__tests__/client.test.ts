@@ -1,5 +1,8 @@
+import { http, HttpResponse } from 'msw';
+
 import { server } from '@/test-utils/msw/server';
 import {
+  API_URL,
   getCategoriesSchemaMismatch,
   getCategoriesSuccess,
   getCurrentUserNetworkError,
@@ -91,5 +94,43 @@ describe('API client', () => {
       'Fashion',
       'Beauty',
     ]);
+  });
+
+  it('parses a raw object without a responder envelope', async () => {
+    server.use(
+      http.post(`${API_URL}/currentUser`, () =>
+        HttpResponse.json({ id: 1, fname: 'Ada', lname: 'Okafor' }),
+      ),
+    );
+
+    const user = await fetchCurrentUser();
+
+    expect(user.fname).toBe('Ada');
+  });
+
+  it('treats success:0 as a failure', async () => {
+    server.use(
+      http.post(`${API_URL}/currentUser`, () =>
+        HttpResponse.json({ success: 0, message: 'nope' }),
+      ),
+    );
+
+    await expect(fetchCurrentUser()).rejects.toMatchObject({ kind: 'api' });
+  });
+
+  it('surfaces a plain-text error body on a 4xx', async () => {
+    server.use(
+      http.post(`${API_URL}/currentUser`, () =>
+        HttpResponse.text('bad request', { status: 400 }),
+      ),
+    );
+
+    await expect(
+      request({ base: 'api', path: '/currentUser', method: 'POST' }),
+    ).rejects.toMatchObject({
+      kind: 'http',
+      status: 400,
+      message: 'bad request',
+    });
   });
 });
