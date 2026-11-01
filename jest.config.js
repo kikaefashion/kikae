@@ -28,10 +28,10 @@ module.exports = {
   },
 
   collectCoverageFrom: [
-    'src/examples/**/*.{ts,tsx}',
     'src/theme/**/*.{ts,tsx}',
     'src/config/**/*.{ts,tsx}',
     'src/utils/**/*.{ts,tsx}',
+    'src/api/**/*.{ts,tsx}',
     '!src/**/__tests__/**',
     '!**/*.test.{ts,tsx}',
     '!**/*.d.ts',
