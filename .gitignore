@@ -47,3 +47,5 @@ coverage/
 
 # husky
 .husky/_
+
+docs/backend-findings.md
