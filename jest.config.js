@@ -34,6 +34,7 @@ module.exports = {
     'src/api/**/*.{ts,tsx}',
     'src/session/**/*.{ts,tsx}',
     'src/providers/**/*.{ts,tsx}',
+    'src/components/ui/**/*.{ts,tsx}',
     '!src/**/__tests__/**',
     '!**/*.test.{ts,tsx}',
     '!**/*.d.ts',

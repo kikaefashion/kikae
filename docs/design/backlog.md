@@ -51,6 +51,13 @@ store.balance − unsettledAmount`). See `docs/backend-findings.md` (Backlog che
   `reference` is the recovery anchor and `/payments/verify/{reference}` is idempotent/re-runnable —
   no dedicated `tx_ref` session endpoint yet.)
 
+## Testing & tooling
+
+- **Route smoke tests (Playwright)** — once Playwright is set up in CI, add real browser smoke
+  tests asserting `/`, `/explore`, and `/design-system` load directly, survive a web refresh (SSR
+  deep-link), and browser back works. Today these routes are guarded only by a structural test
+  (`src/__tests__/routing.test.ts`), not a live render.
+
 ---
 
 ## Backend work after rebuild (prioritized)

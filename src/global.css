@@ -101,3 +101,13 @@
     --kikae-info: #9bd0f5;
   }
 }
+
+/* Two-tone focus ring (tokens.md §6): 2px inner ring (primary) + 2px outer
+   ring (surface). Applied on web via the `.focus-ring` class; harmless on
+   native (NativeWind ignores unknown classes). */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--kikae-primary),
+    0 0 0 4px var(--kikae-surface);
+}
