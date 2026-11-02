@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Chip } from '@/components/ui/chip';
 import { IconButton } from '@/components/ui/icon-button';
 import { Input } from '@/components/ui/input';
+import { Loading } from '@/components/ui/loading';
 import { Price } from '@/components/ui/price';
 import { Radio } from '@/components/ui/radio';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -223,6 +224,13 @@ export default function DesignSystemContent() {
           <Row>
             <Price amount={12500} />
             <Price amount={12500} emphasis variant="title-2" />
+          </Row>
+        </Section>
+
+        <Section title="Loading">
+          <Row>
+            <Loading />
+            <Loading size="lg" label="Loading more" />
           </Row>
         </Section>
       </ScrollView>

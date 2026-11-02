@@ -8,6 +8,7 @@ export * from './constants';
 export * from './icon';
 export * from './icon-button';
 export * from './input';
+export * from './loading';
 export * from './price';
 export * from './radio';
 export * from './skeleton';
