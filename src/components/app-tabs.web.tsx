@@ -1,4 +1,5 @@
 import type { ComponentProps } from 'react';
+import type { Href } from 'expo-router';
 import {
   Tabs,
   TabList,
@@ -22,7 +23,7 @@ export default function AppTabs() {
       <TabSlot style={{ height: '100%' }} />
       <TabList asChild>
         <CustomTabList>
-          <TabTrigger name="home" href="/" asChild>
+          <TabTrigger name="home" href={'/' as Href} asChild>
             <TabButton>Home</TabButton>
           </TabTrigger>
           <TabTrigger name="explore" href="/explore" asChild>
@@ -43,8 +44,12 @@ export function TabButton({ children, isFocused, ...props }: TabButtonProps) {
     <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
       <ThemedView
         type={isFocused ? 'backgroundSelected' : 'backgroundElement'}
-        style={styles.tabButtonView}>
-        <ThemedText type="small" themeColor={isFocused ? 'text' : 'textSecondary'}>
+        style={styles.tabButtonView}
+      >
+        <ThemedText
+          type="small"
+          themeColor={isFocused ? 'text' : 'textSecondary'}
+        >
           {children}
         </ThemedText>
       </ThemedView>
