@@ -1,0 +1,10 @@
+   node_modules/
+   .expo/
+   dist/
+   coverage/
+   *.lock
+   .env*
+   assets/
+   docs/backend-findings.md
+   docs/design/audit.md
+   docs/inventory.md
