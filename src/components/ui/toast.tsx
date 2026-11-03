@@ -9,7 +9,6 @@ import {
   type ReactNode,
 } from 'react';
 import { AccessibilityInfo, View } from 'react-native';
-import { clsx } from 'tailwind-variants';
 
 import { type TextColor } from '@/components/ui/colors';
 import { Icon, type IconName } from '@/components/ui/icon';
