@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@/test-utils/render';
 
+import { Button } from '../button';
 import { Input } from '../input';
 
 describe('Input', () => {
@@ -32,5 +33,17 @@ describe('Input', () => {
     await render(<Input label="Email" onChangeText={onChangeText} />);
     await fireEvent.changeText(screen.getByLabelText('Email'), 'a@b.c');
     expect(onChangeText).toHaveBeenCalledWith('a@b.c');
+  });
+
+  it('renders a trailing accessory inside the field', async () => {
+    await render(
+      <Input
+        label="Password"
+        trailing={<Button size="sm">Show</Button>}
+        secureTextEntry
+      />,
+    );
+    expect(screen.getByLabelText('Password')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Show' })).toBeOnTheScreen();
   });
 });
