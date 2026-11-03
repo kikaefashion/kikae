@@ -9,7 +9,10 @@ import {
   loginUnverified,
 } from '@/test-utils/msw/handlers';
 
+import { persistSession, setGuest, setSessionUserId } from '@/session/session-store';
+
 import { LoginScreen } from '../login-screen';
+import { routes } from '../routes';
 
 const mockReplace = jest.fn();
 const mockUseLocalSearchParams = jest.fn();
@@ -28,13 +31,6 @@ jest.mock('@/session/session-store', () => ({
 jest.mock('@/features/auth/routes', () => ({
   routes: { verifyEmail: jest.fn() },
 }));
-
-import {
-  persistSession,
-  setGuest,
-  setSessionUserId,
-} from '@/session/session-store';
-import { routes } from '../routes';
 
 const mockPersistSession = persistSession as jest.MockedFunction<
   typeof persistSession

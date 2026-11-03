@@ -10,6 +10,10 @@
 module.exports = {
   preset: 'jest-expo',
 
+  // RNTL first renders under `--coverage` + parallel workers can exceed the
+  // 5s default on this machine; give them headroom.
+  testTimeout: 15000,
+
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
   moduleNameMapper: {

@@ -58,9 +58,6 @@ export function LoginScreen() {
     defaultValues: { email: '', password: '' },
   });
 
-  const emailRegistration = register('email');
-  const passwordRegistration = register('password');
-
   const [formError, setFormError] = useState<string | null>(null);
   const [offline, setOffline] = useState(false);
   const [userFetchFailed, setUserFetchFailed] = useState(false);
@@ -138,7 +135,9 @@ export function LoginScreen() {
               status="offline"
               label={LOGIN_MESSAGES.offline}
               actionLabel="Retry"
-              onActionPress={() => submit()}
+              onActionPress={() => {
+                void submit();
+              }}
             />
           ) : null}
 
@@ -165,8 +164,7 @@ export function LoginScreen() {
             onSubmitEditing={() => setFocus('password')}
             error={errors.email?.message}
             editable={!isSubmitting}
-            ref={emailRegistration.ref}
-            onBlur={emailRegistration.onBlur}
+            {...register('email')}
             onChangeText={(text) => setValue('email', text)}
           />
 
@@ -178,8 +176,7 @@ export function LoginScreen() {
             returnKeyType="done"
             error={errors.password?.message}
             editable={!isSubmitting}
-            ref={passwordRegistration.ref}
-            onBlur={passwordRegistration.onBlur}
+            {...register('password')}
             onChangeText={(text) => setValue('password', text)}
             trailing={
               <IconButton
@@ -200,7 +197,13 @@ export function LoginScreen() {
             </Text>
           ) : null}
 
-          <Button size="lg" loading={isSubmitting} onPress={() => submit()}>
+          <Button
+            size="lg"
+            loading={isSubmitting}
+            onPress={() => {
+              void submit();
+            }}
+          >
             {isSubmitting ? 'Logging in…' : 'Login'}
           </Button>
 
