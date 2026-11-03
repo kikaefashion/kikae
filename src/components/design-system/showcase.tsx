@@ -8,14 +8,19 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Chip } from '@/components/ui/chip';
+import { EmptyState } from '@/components/ui/empty-state';
+import { ErrorState } from '@/components/ui/error-state';
 import { IconButton } from '@/components/ui/icon-button';
+import { InlineBanner } from '@/components/ui/inline-banner';
 import { Input } from '@/components/ui/input';
 import { Loading } from '@/components/ui/loading';
+import { OfflineState } from '@/components/ui/offline-state';
 import { Price } from '@/components/ui/price';
 import { Radio } from '@/components/ui/radio';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Text, type TextVariant } from '@/components/ui/text';
+import { ToastProvider, useToast } from '@/components/ui/toast';
 import { roles, type as typeScale } from '@/theme/tokens';
 
 type Mode = 'system' | 'light' | 'dark';
@@ -56,6 +61,42 @@ function Row({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ToastDemo() {
+  const toast = useToast();
+  return (
+    <Row>
+      <Button
+        size="sm"
+        variant="secondary"
+        onPress={() => toast.success('Saved')}
+      >
+        Success
+      </Button>
+      <Button
+        size="sm"
+        variant="secondary"
+        onPress={() => toast.error('Copy failed')}
+      >
+        Error
+      </Button>
+      <Button
+        size="sm"
+        variant="secondary"
+        onPress={() => toast.info('Heads up')}
+      >
+        Info
+      </Button>
+      <Button
+        size="sm"
+        variant="secondary"
+        onPress={() => toast.warning('Low stock')}
+      >
+        Warning
+      </Button>
+    </Row>
+  );
+}
+
 export default function DesignSystemContent() {
   const [mode, setMode] = useState<Mode>('system');
   const changeMode = (next: Mode) => {
@@ -65,7 +106,8 @@ export default function DesignSystemContent() {
 
   return (
     <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
-      <ScrollView contentContainerStyle={{ padding: 24, gap: 32 }}>
+      <ToastProvider>
+        <ScrollView contentContainerStyle={{ padding: 24, gap: 32 }}>
         <View className="gap-8">
           <Text variant="title-1" color="fg">
             Design system
@@ -233,7 +275,53 @@ export default function DesignSystemContent() {
             <Loading size="lg" label="Loading more" />
           </Row>
         </Section>
-      </ScrollView>
+
+        <Section title="InlineBanner">
+          <View className="gap-12">
+            <InlineBanner
+              status="offline"
+              label="You're offline — check your connection"
+              actionLabel="Retry"
+              onActionPress={() => {}}
+            />
+            <InlineBanner status="pending" label="Store awaiting approval" />
+            <InlineBanner
+              status="error"
+              label="Payment failed"
+              actionLabel="Retry"
+              onActionPress={() => {}}
+            />
+          </View>
+        </Section>
+
+        <Section title="EmptyState">
+          <EmptyState
+            title="Nothing here yet"
+            hint="Items you save will appear here."
+          />
+          <EmptyState
+            variant="no-results"
+            title="No results for shoes"
+            hint="Try a different search or clear your filters."
+            actionLabel="Clear filters"
+            onActionPress={() => {}}
+          />
+        </Section>
+
+        <Section title="Error / Offline">
+          <ErrorState onRetry={() => {}} lastUpdated="just now" />
+          <OfflineState
+            onRetry={() => {}}
+            lastUpdated="2m ago"
+            isConnected={false}
+          />
+        </Section>
+
+        <Section title="Toast">
+          <ToastDemo />
+        </Section>
+        </ScrollView>
+      </ToastProvider>
     </SafeAreaView>
   );
 }
