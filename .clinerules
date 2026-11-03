@@ -1,3 +1,10 @@
+- Use targeted edits; never rewrite a whole file for a small change.
+- Run only the tests for the file you changed (yarn test <path>) plus
+  yarn typecheck. Run full yarn validate once at the end of a task.
+- If the same error persists after two attempts, stop and tell me what you tried.
+- Do not browse the web or fetch docs unless I ask; use package.json and the repo.
+- Keep plans to 10 lines and summaries to 10 lines. Ask questions only if blocked.
+
 # Testing conventions
 
 - Test behavior, not implementation. Query by role, label, or text — never by testID.
