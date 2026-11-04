@@ -1,0 +1,19 @@
+{
+  "status": true,
+  "message": "ok",
+  "data": [
+    {
+      "id": 1,
+      "name": "Fashion",
+      "description": null,
+      "subcategories": [
+        {
+          "id": 11,
+          "name": "Men",
+          "productTypes": [{ "id": 111, "name": "Shirts" }]
+        }
+      ]
+    },
+    { "id": 2, "name": "Beauty", "description": null, "subcategories": [] }
+  ]
+}

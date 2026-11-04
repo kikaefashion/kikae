@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from 'react';
+
 import {
   clearSession,
   getAuthToken,
@@ -18,6 +20,7 @@ export type SessionStatus = 'loading' | 'signedOut' | 'signedIn';
 
 const listeners = new Set<() => void>();
 let status: SessionStatus = 'loading';
+let guest = false;
 
 function notify(): void {
   for (const listener of listeners) {
@@ -52,15 +55,37 @@ export async function restoreSession(): Promise<void> {
 }
 
 export async function persistSession(session: Session): Promise<void> {
+  setGuest(false);
   await tokenStorage.setToken(session.token);
   setSession(session);
   setStatus('signedIn');
 }
 
 export async function endSession(): Promise<void> {
+  setGuest(false);
   await tokenStorage.removeToken();
   clearSession();
   setStatus('signedOut');
+}
+
+/** Stores the resolved userId after `/currentUser` (token already persisted). */
+export function setSessionUserId(userId: string | number): void {
+  const token = getAuthToken();
+  if (token) {
+    setSession({ token, userId });
+  }
+}
+
+/** Guest browsing flag (no token). Resets on sign-in/sign-out. */
+export function isGuest(): boolean {
+  return guest;
+}
+
+export function setGuest(next: boolean): void {
+  if (guest !== next) {
+    guest = next;
+    notify();
+  }
 }
 
 export function subscribe(listener: () => void): () => void {
@@ -68,6 +93,16 @@ export function subscribe(listener: () => void): () => void {
   return () => {
     listeners.delete(listener);
   };
+}
+
+/** Reactive session status (drives the root route gate). */
+export function useSessionStatus(): SessionStatus {
+  return useSyncExternalStore(subscribe, () => status, () => status);
+}
+
+/** Reactive guest flag (drives the root route gate). */
+export function useIsGuest(): boolean {
+  return useSyncExternalStore(subscribe, () => guest, () => guest);
 }
 
 export { getAuthToken, getUserId, hasSession };

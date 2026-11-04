@@ -1,10 +1,13 @@
 import '@/global.css';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { useScheme } from '@/components/ui/colors';
+import { resolveGuards } from '@/features/auth/guard';
 import { AppProviders } from '@/providers/AppProviders';
+import { useIsGuest, useSessionStatus } from '@/session/session-store';
 import { roles } from '@/theme/tokens';
 
 SplashScreen.preventAutoHideAsync();
@@ -16,6 +19,13 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const canvas = roles[useScheme()].canvas;
+  const status = useSessionStatus();
+  const guest = useIsGuest();
+  const { tabs, auth } = resolveGuards(status, guest);
+
+  useEffect(() => {
+    document.title = 'Kikae';
+  }, []);
 
   return (
     <AppProviders>
@@ -26,7 +36,12 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: canvas },
         }}
       >
-        <Stack.Screen name="(tabs)" />
+        <Stack.Protected guard={tabs} redirectTo="/login">
+          <Stack.Screen name="(tabs)" />
+        </Stack.Protected>
+        <Stack.Protected guard={auth} redirectTo="/">
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
         <Stack.Screen name="design-system" />
       </Stack>
     </AppProviders>

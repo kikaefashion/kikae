@@ -14,6 +14,8 @@ export interface Capabilities {
   canResizeImages: boolean;
   /** Messaging conversation list / unread counts. */
   hasConversationList: boolean;
+  /** Google sign-in (F1b) — wired in a later task. */
+  googleSignIn: boolean;
 }
 
 export const capabilities: Capabilities = {
@@ -21,4 +23,5 @@ export const capabilities: Capabilities = {
   hasPagination: false,
   canResizeImages: false,
   hasConversationList: false,
+  googleSignIn: false,
 };

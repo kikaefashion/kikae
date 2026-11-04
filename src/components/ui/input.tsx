@@ -1,4 +1,4 @@
-import type { ElementRef } from 'react';
+import type { ElementRef, ReactNode } from 'react';
 import { forwardRef } from 'react';
 import { TextInput, View, type TextInputProps } from 'react-native';
 import { clsx } from 'tailwind-variants';
@@ -16,6 +16,8 @@ export interface InputProps extends TextInputProps {
   helper?: string;
   /** Boxed variant (md radius + surface bg); default is an underline field. */
   boxed?: boolean;
+  /** Accessory rendered inside the right edge (e.g. a password toggle). */
+  trailing?: ReactNode;
 }
 
 /**
@@ -31,6 +33,7 @@ export const Input = forwardRef<ElementRef<typeof TextInput>, InputProps>(
       helper,
       boxed = false,
       editable = true,
+      trailing,
       className,
       ...props
     },
@@ -48,21 +51,29 @@ export const Input = forwardRef<ElementRef<typeof TextInput>, InputProps>(
           </Text>
         ) : null}
 
-        <TextInput
-          ref={ref}
-          {...props}
-          accessibilityLabel={label}
-          accessibilityState={{ disabled: !editable }}
-          editable={editable}
-          placeholderTextColor={placeholderColor}
-          className={clsx(
-            'h-48 px-16 text-body text-fg',
-            boxed ? 'rounded-md border bg-surface' : 'border-b',
-            error ? 'border-error' : 'border-line focus:border-line-strong',
-            !editable && 'border-line text-fg-disabled',
-            focusRing,
-          )}
-        />
+        <View className="relative justify-center">
+          <TextInput
+            ref={ref}
+            {...props}
+            accessibilityLabel={label}
+            accessibilityState={{ disabled: !editable }}
+            editable={editable}
+            placeholderTextColor={placeholderColor}
+            className={clsx(
+              'h-48 px-16 text-body text-fg',
+              boxed ? 'rounded-md border bg-surface' : 'border-b',
+              error ? 'border-error' : 'border-line focus:border-line-strong',
+              !editable && 'border-line text-fg-disabled',
+              trailing ? 'pr-44' : null,
+              focusRing,
+            )}
+          />
+          {trailing ? (
+            <View className="absolute bottom-0 right-0 top-0 items-center justify-center">
+              {trailing}
+            </View>
+          ) : null}
+        </View>
 
         {message ? (
           <Text

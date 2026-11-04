@@ -98,3 +98,51 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 14
+
+  e2e-web:
+    name: Web end-to-end (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Export web build (dummy URLs)
+        env:
+          # Hermetic URLs, inlined at build time — never the GitHub Variables.
+          EXPO_PUBLIC_AUTH_URL: https://auth.e2e.test
+          EXPO_PUBLIC_API_URL: https://api.e2e.test
+          EXPO_PUBLIC_MEDIA_URL_PREFIX: https://media.e2e.test/
+        run: npx expo export --platform web
+
+      - name: Run Playwright
+        run: npx playwright test
+
+      - name: Upload Playwright report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

@@ -5,8 +5,11 @@ import {
   getSessionStatus,
   getUserId,
   hasSession,
+  isGuest,
   persistSession,
   restoreSession,
+  setGuest,
+  setSessionUserId,
   subscribe,
 } from '../session-store';
 import { tokenStorage } from '../token-storage';
@@ -32,6 +35,7 @@ const mockRemoveToken = tokenStorage.removeToken as jest.MockedFunction<
 beforeEach(() => {
   jest.clearAllMocks();
   clearSession();
+  setGuest(false);
 });
 
 describe('session-store', () => {
@@ -101,5 +105,45 @@ describe('session-store', () => {
 
     expect(listener).toHaveBeenCalled();
     unsubscribe();
+  });
+
+  it('sets and reads the guest flag', () => {
+    expect(isGuest()).toBe(false);
+    setGuest(true);
+    expect(isGuest()).toBe(true);
+  });
+
+  it('notifies subscribers when the guest flag changes', () => {
+    const listener = jest.fn();
+    const unsubscribe = subscribe(listener);
+
+    setGuest(true);
+
+    expect(listener).toHaveBeenCalled();
+    unsubscribe();
+  });
+
+  it('clears the guest flag on sign-in', async () => {
+    setGuest(true);
+
+    await persistSession({ token: 't', userId: 42 });
+
+    expect(isGuest()).toBe(false);
+  });
+
+  it('clears the guest flag on sign-out', async () => {
+    setGuest(true);
+
+    await endSession();
+
+    expect(isGuest()).toBe(false);
+  });
+
+  it('stores the userId once the token exists', async () => {
+    await persistSession({ token: 't', userId: null });
+
+    setSessionUserId(7);
+
+    expect(getUserId()).toBe(7);
   });
 });

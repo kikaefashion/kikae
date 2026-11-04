@@ -45,6 +45,10 @@ example
 # testing
 coverage/
 
+# Playwright (reports, traces, screenshots)
+playwright-report/
+test-results/
+
 # husky
 .husky/_
 

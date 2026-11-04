@@ -6,6 +6,9 @@ import type { CurrentUser } from '@/api/endpoints/current-user';
 /** Matches the test env in `jest.setup.ts` (`EXPO_PUBLIC_API_URL`). */
 export const API_URL = 'https://api.test';
 
+/** Matches the test env in `jest.setup.ts` (`EXPO_PUBLIC_AUTH_URL`). */
+export const AUTH_URL = 'https://auth.test';
+
 export const currentUser: CurrentUser = {
   id: 1,
   fname: 'Ada',
@@ -95,6 +98,29 @@ export const getCategoriesSchemaMismatch = http.get(
       message: 'ok',
       data: [{ id: true, name: 123 }],
     }),
+);
+
+export const loginSuccess = http.post(`${AUTH_URL}/login`, () =>
+  HttpResponse.json({
+    token: 'token-1',
+    success: 'You have logged in successfully.',
+  }),
+);
+
+export const loginInvalid = http.post(`${AUTH_URL}/login`, () =>
+  HttpResponse.json({
+    errors: 'The credentials you provided could not be verified.',
+  }),
+);
+
+export const loginUnverified = http.post(`${AUTH_URL}/login`, () =>
+  HttpResponse.json({
+    errors: 'Please verify your email address before logging in.',
+  }),
+);
+
+export const loginNetworkError = http.post(`${AUTH_URL}/login`, () =>
+  HttpResponse.error(),
 );
 
 /** Default handlers registered in `jest.setup.ts`. */

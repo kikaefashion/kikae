@@ -7,6 +7,7 @@ describe('capabilities', () => {
       hasPagination: false,
       canResizeImages: false,
       hasConversationList: false,
+      googleSignIn: false,
     });
   });
 });

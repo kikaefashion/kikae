@@ -10,7 +10,14 @@
 module.exports = {
   preset: 'jest-expo',
 
+  // RNTL first renders under `--coverage` + parallel workers can exceed the
+  // 5s default on this machine; give them headroom.
+  testTimeout: 15000,
+
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+
+  // Playwright owns the e2e/ directory; Jest must not try to run its specs.
+  testPathIgnorePatterns: ['<rootDir>/e2e/'],
 
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -34,6 +41,7 @@ module.exports = {
     'src/api/**/*.{ts,tsx}',
     'src/session/**/*.{ts,tsx}',
     'src/providers/**/*.{ts,tsx}',
+    'src/features/**/*.{ts,tsx}',
     'src/components/ui/**/*.{ts,tsx}',
     '!src/**/__tests__/**',
     '!**/*.test.{ts,tsx}',
