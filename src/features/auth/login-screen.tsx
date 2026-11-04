@@ -2,12 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { z } from 'zod';
 
 import { fetchCurrentUser } from '@/api/endpoints/current-user';
@@ -25,7 +20,6 @@ import {
 } from '@/session/session-store';
 
 import { sanitizeRedirectTo } from './redirect-to';
-import { routes } from './routes';
 
 const loginSchema = z.object({
   email: z
@@ -89,7 +83,6 @@ export function LoginScreen() {
         break;
       case 'unverified':
         setFormError(LOGIN_MESSAGES.unverified);
-        routes.verifyEmail(values.email);
         break;
       case 'network':
         setOffline(true);
@@ -176,6 +169,9 @@ export function LoginScreen() {
             returnKeyType="done"
             error={errors.password?.message}
             editable={!isSubmitting}
+            onSubmitEditing={() => {
+              void submit();
+            }}
             {...register('password')}
             onChangeText={(text) => setValue('password', text)}
             trailing={

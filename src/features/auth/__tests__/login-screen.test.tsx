@@ -9,10 +9,13 @@ import {
   loginUnverified,
 } from '@/test-utils/msw/handlers';
 
-import { persistSession, setGuest, setSessionUserId } from '@/session/session-store';
+import {
+  persistSession,
+  setGuest,
+  setSessionUserId,
+} from '@/session/session-store';
 
 import { LoginScreen } from '../login-screen';
-import { routes } from '../routes';
 
 const mockReplace = jest.fn();
 const mockUseLocalSearchParams = jest.fn();
@@ -28,19 +31,12 @@ jest.mock('@/session/session-store', () => ({
   setSessionUserId: jest.fn(),
 }));
 
-jest.mock('@/features/auth/routes', () => ({
-  routes: { verifyEmail: jest.fn() },
-}));
-
 const mockPersistSession = persistSession as jest.MockedFunction<
   typeof persistSession
 >;
 const mockSetGuest = setGuest as jest.MockedFunction<typeof setGuest>;
 const mockSetSessionUserId = setSessionUserId as jest.MockedFunction<
   typeof setSessionUserId
->;
-const mockVerifyEmail = routes.verifyEmail as jest.MockedFunction<
-  typeof routes.verifyEmail
 >;
 
 async function fillAndSubmit(email: string, password: string) {
@@ -97,15 +93,13 @@ describe('LoginScreen', () => {
       await screen.findByText('Incorrect email or password'),
     ).toBeOnTheScreen();
     expect(
-      screen.queryByText(
-        'The credentials you provided could not be verified.',
-      ),
+      screen.queryByText('The credentials you provided could not be verified.'),
     ).not.toBeOnTheScreen();
     expect(mockReplace).not.toHaveBeenCalled();
     expect(mockPersistSession).not.toHaveBeenCalled();
   });
 
-  it('shows the message and calls verifyEmail for an unverified account', async () => {
+  it('shows the message for an unverified account', async () => {
     server.use(loginUnverified);
 
     await render(<LoginScreen />);
@@ -116,7 +110,6 @@ describe('LoginScreen', () => {
         'Please verify your email address before logging in.',
       ),
     ).toBeOnTheScreen();
-    expect(mockVerifyEmail).toHaveBeenCalledWith('ada@example.com');
   });
 
   it('shows the offline banner and preserves typed values on network failure', async () => {

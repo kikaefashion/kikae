@@ -1,6 +1,7 @@
 import '@/global.css';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { useScheme } from '@/components/ui/colors';
@@ -21,6 +22,10 @@ export default function RootLayout() {
   const status = useSessionStatus();
   const guest = useIsGuest();
   const { tabs, auth } = resolveGuards(status, guest);
+
+  useEffect(() => {
+    document.title = 'Kikae';
+  }, []);
 
   return (
     <AppProviders>
