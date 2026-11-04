@@ -2,6 +2,17 @@
 
 Items deferred until after the monochrome rebuild. Each item lists the affected feature and
 what would change. None of these are in scope for the first rebuild pass.
+## Home feed
+
+- **Persisted query cache** — persist the `['home']` payload so a cold start goes straight to
+  cached content offline (today offline only works once data has been fetched in-memory).
+- **Slimmer `customer/v2/home` payload** — the backend returns unused keys (sponsored, fashion
+  news, runway videos) plus per-store private fields; trim them server-side.
+- **Sponsored rail** — render a sponsored products rail once the backend provides real data (the
+  `sponsored_limit` is pinned to 0 today).
+- **Vendor highlights row** — add a stores row when the backend provides store data on the home
+  payload.
+
 
 ## Custom orders (F13)
 
