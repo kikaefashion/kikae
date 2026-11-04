@@ -1,0 +1,13 @@
+# Local end-to-end login flow (Maestro).
+# Credentials are injected from the shell as MAESTRO_EMAIL / MAESTRO_PASSWORD —
+# never commit real values here. Uses visible text and accessibility labels only.
+appId: com.kikae.kikaeFrontend.dev
+---
+- launchApp
+- assertVisible: 'Welcome back'
+- tapOn: 'Email'
+- inputText: ${MAESTRO_EMAIL}
+- tapOn: 'Password'
+- inputText: ${MAESTRO_PASSWORD}
+- tapOn: 'Login'
+- assertVisible: 'Home'
