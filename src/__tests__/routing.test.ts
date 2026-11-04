@@ -11,10 +11,16 @@ describe('routing structure', () => {
     expect(layout).toMatch(/name="\(tabs\)"/);
   });
 
-  it('keeps the main tabs inside a (tabs) group', () => {
+  it('keeps the five main tabs inside a (tabs) group', () => {
     expect(existsSync(join(APP, '(tabs)', '_layout.tsx'))).toBe(true);
-    expect(existsSync(join(APP, '(tabs)', 'index.tsx'))).toBe(true);
-    expect(existsSync(join(APP, '(tabs)', 'explore.tsx'))).toBe(true);
+    for (const route of ['index', 'discover', 'runway', 'makeup', 'profile']) {
+      expect(existsSync(join(APP, '(tabs)', `${route}.tsx`))).toBe(true);
+    }
+  });
+
+  it('keeps cart and notifications as standalone routes', () => {
+    expect(existsSync(join(APP, 'cart.tsx'))).toBe(true);
+    expect(existsSync(join(APP, 'notifications.tsx'))).toBe(true);
   });
 
   it('keeps design-system dev-only and redirects in production', () => {

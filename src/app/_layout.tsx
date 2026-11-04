@@ -42,6 +42,8 @@ export default function RootLayout() {
         <Stack.Protected guard={auth} redirectTo="/">
           <Stack.Screen name="(auth)" />
         </Stack.Protected>
+        <Stack.Screen name="cart" />
+        <Stack.Screen name="notifications" />
         <Stack.Screen name="design-system" />
       </Stack>
     </AppProviders>

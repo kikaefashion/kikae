@@ -43,6 +43,7 @@ module.exports = {
     'src/providers/**/*.{ts,tsx}',
     'src/features/**/*.{ts,tsx}',
     'src/components/ui/**/*.{ts,tsx}',
+    'src/components/navigation/**/*.{ts,tsx}',
     '!src/**/__tests__/**',
     '!**/*.test.{ts,tsx}',
     '!**/*.d.ts',

@@ -49,3 +49,9 @@ export function useColumnCount(): number {
   const { width } = useWindowDimensions();
   return computeColumns(width);
 }
+
+/** True at the `lg` breakpoint (1024) and wider — where nav switches to a sidebar. */
+export function useDesktopLayout(): boolean {
+  const { width } = useWindowDimensions();
+  return width >= BREAKPOINTS.lg;
+}

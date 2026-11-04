@@ -10,11 +10,7 @@ const SRC = join(process.cwd(), 'src');
 // Legacy starter files that still carry hardcoded colors. They are replaced by
 // the token-driven components and will be deleted; remove these exclusions
 // when the starter template is gone.
-const LEGACY = new Set([
-  join(SRC, 'constants', 'theme.ts'),
-  join(SRC, 'components', 'animated-icon.tsx'),
-  join(SRC, 'components', 'themed-text.tsx'),
-]);
+const LEGACY = new Set([join(SRC, 'components', 'animated-icon.tsx')]);
 
 function collectSourceFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((entry) => {
