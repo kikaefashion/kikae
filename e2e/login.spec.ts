@@ -29,13 +29,13 @@ async function fillAndSubmit(
   await loginButton(page).click();
 }
 
-/** The tab bar renders Home/Explore links; only the tabs layout has them. */
+/** The tab bar renders Home/Discover tabs; only the tabs layout has them. */
 async function expectOnTabs(page: Page): Promise<void> {
   await expect(
-    page.getByRole('link', { name: 'Home', exact: true }),
+    page.getByRole('tab', { name: 'Home', exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole('link', { name: 'Explore', exact: true }),
+    page.getByRole('tab', { name: 'Discover', exact: true }),
   ).toBeVisible();
 }
 
