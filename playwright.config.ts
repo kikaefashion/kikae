@@ -30,6 +30,14 @@ export default defineConfig({
     url: `http://localhost:${PORT}/login`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      // Hermetic URLs, required by the server-rendered build (src/config/env.ts
+      // fail-fast check). Must match e2e/support/backend.ts and
+      // scripts/test-e2e.js. Overrides any local .env.* values.
+      EXPO_PUBLIC_AUTH_URL: 'https://auth.e2e.test',
+      EXPO_PUBLIC_API_URL: 'https://api.e2e.test',
+      EXPO_PUBLIC_MEDIA_URL_PREFIX: 'https://media.e2e.test/',
+    },
   },
   projects: [
     {
