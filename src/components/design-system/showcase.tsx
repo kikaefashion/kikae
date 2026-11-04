@@ -11,12 +11,15 @@ import { Chip } from '@/components/ui/chip';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { IconButton } from '@/components/ui/icon-button';
+import { Image } from '@/components/ui/image';
 import { InlineBanner } from '@/components/ui/inline-banner';
 import { Input } from '@/components/ui/input';
 import { Loading } from '@/components/ui/loading';
 import { OfflineState } from '@/components/ui/offline-state';
 import { Price } from '@/components/ui/price';
+import { ProductCard, type ProductCardProduct } from '@/components/ui/product-card';
 import { Radio } from '@/components/ui/radio';
+import { SectionHeader } from '@/components/ui/section-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Text, type TextVariant } from '@/components/ui/text';
@@ -60,6 +63,19 @@ function Row({ children }: { children: React.ReactNode }) {
     <View className="flex-row flex-wrap items-center gap-8">{children}</View>
   );
 }
+
+const showcaseProduct: ProductCardProduct = {
+  id: 1,
+  name: 'Ankara dress',
+  storeName: 'Ada Threads',
+  price: 12000,
+  oldPrice: 15000,
+  units: 5,
+  thrift: true,
+  madeInNigeria: true,
+  rating: 4.5,
+  imageUrl: null,
+};
 
 function ToastDemo() {
   const toast = useToast();
@@ -319,6 +335,39 @@ export default function DesignSystemContent() {
 
         <Section title="Toast">
           <ToastDemo />
+        </Section>
+
+        <Section title="SectionHeader">
+          <View className="gap-12">
+            <SectionHeader title="New in" />
+            <SectionHeader
+              title="Featured"
+              actionLabel="See all"
+              onActionPress={() => {}}
+            />
+          </View>
+        </Section>
+
+        <Section title="Image">
+          <Row>
+            <Image
+              source="https://media.test/profile-pic/x.webp"
+              alt="Sample product"
+              className="h-96 w-80 rounded-lg"
+            />
+            <Image source={null} alt="Missing" className="h-96 w-80 rounded-lg" />
+          </Row>
+        </Section>
+
+        <Section title="ProductCard">
+          <Row>
+            <ProductCard product={showcaseProduct} width={160} />
+            <ProductCard
+              product={{ ...showcaseProduct, id: 2, price: 0, oldPrice: null, units: 0, rating: null }}
+              liked
+              width={160}
+            />
+          </Row>
         </Section>
         </ScrollView>
       </ToastProvider>
