@@ -42,8 +42,10 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
+    "@playwright/test": "^1.64.1",
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "30.0.0",
     "@types/react": "~19.3.0",
@@ -72,6 +74,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --ci --coverage",
     "test:watch": "jest --watch",
+    "test:e2e": "node scripts/test-e2e.js",
     "validate": "yarn typecheck && yarn lint && yarn test",
     "audit": "node scripts/check-audit.js",
     "prepare": "husky"

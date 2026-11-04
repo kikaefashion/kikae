@@ -1,0 +1,27 @@
+{
+  "status": true,
+  "message": "ok",
+  "data": {
+    "id": 1,
+    "fname": "Ada",
+    "lname": "Okafor",
+    "email": "ada@example.com",
+    "phone": "2348000000000",
+    "profilePic": null,
+    "dob": "1990-05-20",
+    "usertype_id": 1,
+    "status": true,
+    "usertype": { "id": 1, "name": "Customer", "store_id": null },
+    "addresses": [
+      {
+        "id": 1,
+        "address": "12 Marina",
+        "state_id": 25,
+        "city": "Lagos",
+        "isDefault": true
+      }
+    ],
+    "followings": [],
+    "user_badge": ["New User"]
+  }
+}
