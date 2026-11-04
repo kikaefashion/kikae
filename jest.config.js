@@ -16,6 +16,9 @@ module.exports = {
 
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
+  // Playwright owns the e2e/ directory; Jest must not try to run its specs.
+  testPathIgnorePatterns: ['<rootDir>/e2e/'],
+
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },

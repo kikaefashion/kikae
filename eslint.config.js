@@ -5,7 +5,15 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*', 'coverage/', '.expo/', 'node_modules/'],
+    ignores: [
+      'dist/*',
+      'coverage/',
+      '.expo/',
+      'node_modules/',
+      'e2e/',
+      'playwright-report/',
+      'test-results/',
+    ],
   },
   {
     // eslint-config-expo registers the @typescript-eslint plugin only for
