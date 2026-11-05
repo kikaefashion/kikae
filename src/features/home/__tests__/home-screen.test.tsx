@@ -11,6 +11,8 @@ import { AccessibilityInfo, View } from 'react-native';
 import { clearSession, setSession } from '@/api/identity';
 import {
   API_URL,
+  getBannersEmpty,
+  getBannersServerError,
   getHomeEmpty,
   getHomeOnlyNewArrivals,
   getHomeServerError,
@@ -84,6 +86,7 @@ const mockUseNetInfo = useNetInfo as jest.MockedFunction<typeof useNetInfo>;
 const mockPush = jest.fn();
 jest.mock('expo-router', () => ({
   usePathname: () => '/',
+  useIsFocused: () => true,
   router: { push: (href: unknown) => mockPush(href) },
   Link: ({ children }: { children: ReactNode }) => children,
 }));
@@ -156,9 +159,10 @@ describe('HomeScreen', () => {
     expect(await screen.findByText('Nothing here yet')).toBeOnTheScreen();
   });
 
-  it('renders chips, grid and rails from one response', async () => {
+  it('renders the carousel, chips, grid and rails from two responses', async () => {
     await render(<HomeScreen />);
     expect(await screen.findAllByText('Ankara dress')).not.toHaveLength(0);
+    expect(screen.getByText('Makeup')).toBeOnTheScreen();
     expect(screen.getByRole('header', { name: 'Home' })).toBeOnTheScreen();
     expect(screen.getByRole('header', { name: 'New in' })).toBeOnTheScreen();
     expect(screen.getByRole('header', { name: 'Featured' })).toBeOnTheScreen();
@@ -176,12 +180,30 @@ describe('HomeScreen', () => {
     expect(mockPush).toHaveBeenCalledWith('/discover?categoryId=1');
   });
 
-  it('makes only the home request', async () => {
+  it('makes exactly two requests on load (home + banners)', async () => {
     await render(<HomeScreen />);
     await screen.findAllByText('Ankara dress');
 
-    expect(requestedUrls).toHaveLength(1);
-    expect(new URL(requestedUrls[0]).pathname).toBe('/customer/v2/home');
+    const pathnames = requestedUrls.map((url) => new URL(url).pathname).sort();
+    expect(pathnames).toEqual(['/banners/all', '/customer/v2/home']);
+  });
+
+  it('renders the home feed when banners fail', async () => {
+    server.use(getBannersServerError);
+    await render(<HomeScreen />);
+    await screen.findAllByText('Ankara dress');
+
+    expect(screen.queryByText('Makeup')).toBeNull();
+    expect(screen.getByRole('header', { name: 'New in' })).toBeOnTheScreen();
+  });
+
+  it('renders the home feed when banners are empty', async () => {
+    server.use(getBannersEmpty);
+    await render(<HomeScreen />);
+    await screen.findAllByText('Ankara dress');
+
+    expect(screen.queryByText('Makeup')).toBeNull();
+    expect(screen.getByRole('header', { name: 'New in' })).toBeOnTheScreen();
   });
 
   it('hides empty sections and never renders a vendor row', async () => {

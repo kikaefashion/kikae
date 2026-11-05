@@ -1,0 +1,5 @@
+import { ComingSoonScreen } from '@/components/navigation/screen-layout';
+
+export default function FreebiesScreen() {
+  return <ComingSoonScreen title="Freebies" />;
+}

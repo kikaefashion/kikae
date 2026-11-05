@@ -1,9 +1,12 @@
 import { router, usePathname, type Href } from 'expo-router';
+import { useState } from 'react';
 import { FlatList, ScrollView, View, useWindowDimensions } from 'react-native';
 
 import type { Category, Product } from '@/api/endpoints/home';
 import { getUserId } from '@/api/identity';
+import { useBanners } from '@/api/queries/use-banners';
 import { useHome } from '@/api/queries/use-home';
+import { Carousel, type CarouselSlide } from '@/components/ui/carousel';
 import { Chip } from '@/components/ui/chip';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
@@ -17,6 +20,7 @@ import { requireAuth } from '@/features/auth/require-auth';
 import { useSessionStatus } from '@/session/session-store';
 import { useColumnCount } from '@/utils/layout';
 
+import { toCarouselSlide } from './banner-links';
 import { isProductLiked, toCardProduct } from './selectors';
 import { useLikeProduct } from './use-like-product';
 
@@ -72,6 +76,7 @@ function HomeSkeleton({ columns }: { columns: number }) {
       className="flex-1 bg-canvas"
       contentContainerStyle={{ padding: 16, gap: 16 }}
     >
+      <Skeleton shape="banner" />
       <View className="flex-row gap-8">
         {Array.from({ length: 5 }).map((_, index) => (
           <View key={index} className="h-40 w-64 rounded-full bg-skeleton" />
@@ -99,7 +104,9 @@ export function HomeScreen() {
   const offline = connectivity.isConnected === false;
 
   const { data, isLoading, isError, refetch } = useHome();
+  const banners = useBanners();
   const like = useLikeProduct(userId);
+  const [refreshing, setRefreshing] = useState(false);
 
   if (isLoading && !data) {
     return <HomeSkeleton columns={columns} />;
@@ -151,6 +158,18 @@ export function HomeScreen() {
     router.push(`/discover?categoryId=${category.id}` as Href);
   };
 
+  const handleBannerPress = (slide: CarouselSlide) => {
+    if (slide.href) router.push(slide.href as Href);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([refetch(), banners.refetch()]);
+    setRefreshing(false);
+  };
+
+  const bannerSlides = (banners.data ?? []).map(toCarouselSlide);
+
   return (
     <View className="flex-1 bg-canvas">
       <FlatList
@@ -160,6 +179,8 @@ export function HomeScreen() {
         keyExtractor={(item) => String(item.id)}
         columnWrapperStyle={columns > 1 ? { gap: 16 } : undefined}
         contentContainerStyle={{ padding: 16, gap: 16 }}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
         renderItem={({ item }) => (
           <ProductCard
             product={toCardProduct(item)}
@@ -170,6 +191,7 @@ export function HomeScreen() {
         )}
         ListHeaderComponent={
           <View className="gap-16">
+            <Carousel slides={bannerSlides} onSlidePress={handleBannerPress} />
             <Text variant="title-1" color="fg" accessibilityRole="header">
               Home
             </Text>
