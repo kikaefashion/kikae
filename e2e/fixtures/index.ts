@@ -81,6 +81,58 @@ const CategoriesEnvelopeSchema = z.object({
   data: z.array(ProductCategorySchema),
 });
 
+const MediaSchema = z.object({
+  url: z.string().nullable(),
+});
+
+const StoreSchema = z.object({
+  id: z.union([z.number().int(), z.string()]),
+  name: z.string(),
+  logo: z.string().nullable(),
+});
+
+const LikeSchema = z.object({
+  user_id: z.union([z.number().int(), z.string()]),
+  like: z.union([z.boolean(), z.number()]),
+});
+
+const HomeProductSchema = z.object({
+  id: z.union([z.number().int(), z.string()]),
+  name: z.string(),
+  price: z.number(),
+  old_price: z.number().nullable(),
+  status: z.string(),
+  units: z.number().int(),
+  thrift: z.boolean().nullable(),
+  made_in_nigeria: z.boolean().optional(),
+  rating: z.number().nullable(),
+  store: StoreSchema,
+  media: z.array(MediaSchema),
+  likes: z.array(LikeSchema),
+});
+
+const HomeCategorySchema = z.object({
+  id: z.union([z.number().int(), z.string()]),
+  name: z.string(),
+  product_count: z.number().int(),
+  total_views: z.number().int(),
+  image: z.string().nullable(),
+});
+
+const HomeDataSchema = z.object({
+  new_arrivals: z.array(HomeProductSchema),
+  featured_products: z.array(HomeProductSchema),
+  thrift_products: z.array(HomeProductSchema),
+  freebies: z.array(HomeProductSchema),
+  trending_categories: z.array(HomeCategorySchema),
+});
+
+const HomeEnvelopeSchema = z.object({
+  status: z.boolean(),
+  message: z.string(),
+  data: HomeDataSchema,
+});
+
 function load<T>(filename: string, schema: z.ZodType<T>): T {
   const raw = readFileSync(join(FIXTURES_DIR, filename), 'utf8');
   return schema.parse(JSON.parse(raw));
@@ -91,6 +143,7 @@ export const loginInvalid = load('login-invalid.json', LoginErrorSchema);
 export const loginUnverified = load('login-unverified.json', LoginErrorSchema);
 export const currentUser = load('current-user.json', CurrentUserEnvelopeSchema);
 export const categories = load('categories.json', CategoriesEnvelopeSchema);
+export const home = load('home.json', HomeEnvelopeSchema);
 
 export type CurrentUser = z.infer<typeof CurrentUserSchema>;
 export type ProductCategory = z.infer<typeof ProductCategorySchema>;

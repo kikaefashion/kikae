@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 import {
   categories,
   currentUser,
+  home,
   loginInvalid,
   loginSuccess,
   loginUnverified,
@@ -82,6 +83,22 @@ export async function mockBackend(
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify(categories),
+    });
+  });
+
+  await page.route(`${API_URL}/customer/v2/home`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(home),
+    });
+  });
+
+  await page.route(`${API_URL}/likeProduct`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ status: true, message: 'ok', data: { liked: true } }),
     });
   });
 }

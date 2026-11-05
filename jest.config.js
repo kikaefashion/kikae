@@ -14,6 +14,11 @@ module.exports = {
   // 5s default on this machine; give them headroom.
   testTimeout: 15000,
 
+  // React Native's VirtualizedList and the session store's useSyncExternalStore
+  // leave timers/handles open in the no-layout Jest renderer, keeping workers
+  // alive after the suite finishes. Force the process to exit once tests pass.
+  forceExit: true,
+
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
   // Playwright owns the e2e/ directory; Jest must not try to run its specs.

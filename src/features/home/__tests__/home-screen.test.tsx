@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 import {
   NetInfoStateType,
@@ -6,7 +6,7 @@ import {
   type NetInfoState,
 } from '@react-native-community/netinfo';
 import { delay, http, HttpResponse } from 'msw';
-import { AccessibilityInfo } from 'react-native';
+import { AccessibilityInfo, View } from 'react-native';
 
 import { clearSession, setSession } from '@/api/identity';
 import {
@@ -22,6 +22,57 @@ import { server } from '@/test-utils/msw/server';
 import { fireEvent, render, screen } from '@/test-utils/render';
 
 import { HomeScreen } from '../home-screen';
+
+type MockFlatListProps = {
+  data?: readonly unknown[];
+  renderItem: (info: { item: unknown; index: number }) => ReactElement | null;
+  keyExtractor?: (item: unknown, index: number) => string;
+  numColumns?: number;
+  horizontal?: boolean;
+  ListHeaderComponent?: ReactElement | null;
+  ListFooterComponent?: ReactElement | null;
+};
+
+// `VirtualizedList` schedules recurring 50ms timers in the no-layout Jest
+// renderer, which keeps workers alive after the suite. Render items inline.
+function mockFlatList({
+  data = [],
+  renderItem,
+  keyExtractor,
+  numColumns,
+  horizontal,
+  ListHeaderComponent,
+  ListFooterComponent,
+}: MockFlatListProps) {
+  const items = data.map((item, index) => (
+    <View key={keyExtractor ? keyExtractor(item, index) : index}>
+      {renderItem({ item, index })}
+    </View>
+  ));
+
+  return (
+    <View>
+      {ListHeaderComponent}
+      <View
+        style={
+          horizontal
+            ? { flexDirection: 'row' }
+            : numColumns
+              ? { flexDirection: 'row', flexWrap: 'wrap' }
+              : undefined
+        }
+      >
+        {items}
+      </View>
+      {ListFooterComponent}
+    </View>
+  );
+}
+
+jest.mock('react-native/Libraries/Lists/FlatList', () => ({
+  __esModule: true,
+  default: mockFlatList,
+}));
 
 jest.mock('@react-native-community/netinfo', () => {
   const actual = jest.requireActual('@react-native-community/netinfo');
@@ -115,6 +166,14 @@ describe('HomeScreen', () => {
     expect(screen.getByRole('header', { name: 'Free' })).toBeOnTheScreen();
     expect(screen.getByRole('link', { name: 'Fashion' })).toBeOnTheScreen();
     expect(screen.queryByRole('link', { name: 'Beauty' })).toBeNull();
+  });
+
+  it('navigates a chip tap to Discover with the category id', async () => {
+    await render(<HomeScreen />);
+    await screen.findAllByText('Ankara dress');
+
+    await fireEvent.press(screen.getByRole('link', { name: 'Fashion' }));
+    expect(mockPush).toHaveBeenCalledWith('/discover?categoryId=1');
   });
 
   it('makes only the home request', async () => {
