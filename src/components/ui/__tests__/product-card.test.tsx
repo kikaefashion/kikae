@@ -16,8 +16,7 @@ const product: ProductCardProduct = {
   oldPrice: 15000,
   units: 5,
   thrift: false,
-  madeInNigeria: true,
-  rating: 4.5,
+  ratings: [{ rating: 4 }, { rating: 5 }],
   imageUrl: 'https://media.test/x.webp',
 };
 
@@ -39,18 +38,30 @@ describe('ProductCard', () => {
     expect(screen.queryByText('₦0')).toBeNull();
   });
 
-  it('shows badges and hides them when unset', async () => {
-    await render(
-      <ProductCard product={{ ...product, thrift: true, madeInNigeria: false }} />,
+  it('shows the Thrift badge only when thrift is true', async () => {
+    const { rerender } = await render(
+      <ProductCard product={{ ...product, thrift: true }} />,
     );
     expect(screen.getByText('Thrift')).toBeOnTheScreen();
-    expect(screen.queryByText('Made in Nigeria')).toBeNull();
+
+    await rerender(<ProductCard product={{ ...product, thrift: false }} />);
+    expect(screen.queryByText('Thrift')).toBeNull();
   });
 
-  it('shows "Sold out" when units are zero and hides rating when null', async () => {
-    await render(<ProductCard product={{ ...product, units: 0, rating: null }} />);
+  it('shows "Sold out" when units are zero', async () => {
+    await render(<ProductCard product={{ ...product, units: 0 }} />);
     expect(screen.getByText('Sold out')).toBeOnTheScreen();
-    expect(screen.queryByText('4.5')).toBeNull();
+  });
+
+  it('shows the rounded average rating when ratings exist', async () => {
+    await render(<ProductCard product={product} />);
+    // [{rating: 4}, {rating: 5}] → average 4.5 → rounded 5.
+    expect(screen.getByText('5')).toBeOnTheScreen();
+  });
+
+  it('hides the rating when there are no ratings', async () => {
+    await render(<ProductCard product={{ ...product, ratings: [] }} />);
+    expect(screen.queryByText('5')).toBeNull();
   });
 
   it('labels the heart "Add to wishlist" and "Saved" once liked', async () => {
@@ -67,7 +78,9 @@ describe('ProductCard', () => {
 
   it('fires the like handler and disables the heart while saving', async () => {
     const onLikePress = jest.fn();
-    await render(<ProductCard product={product} saving onLikePress={onLikePress} />);
+    await render(
+      <ProductCard product={product} saving onLikePress={onLikePress} />,
+    );
     const heart = screen.getByRole('button', { name: 'Add to wishlist' });
     expect(heart.props.accessibilityState).toMatchObject({ disabled: true });
     await fireEvent.press(heart);

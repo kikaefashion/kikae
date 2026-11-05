@@ -11,7 +11,7 @@ const product: Product = {
   units: 5,
   thrift: true,
   made_in_nigeria: true,
-  rating: 4.5,
+  ratings: [{ rating: 4 }, { rating: 5 }],
   store: { id: 'store-1', name: 'Ada Threads', logo: 'profile-pic/logo.webp' },
   media: [{ url: 'profile-pic/dress.webp' }],
   likes: [{ user_id: 7, like: 1 }],
@@ -50,8 +50,7 @@ describe('toCardProduct', () => {
       oldPrice: 15000,
       units: 5,
       thrift: true,
-      madeInNigeria: true,
-      rating: 4.5,
+      ratings: [{ rating: 4 }, { rating: 5 }],
       imageUrl: 'https://media.test/profile-pic/dress.webp',
     });
   });

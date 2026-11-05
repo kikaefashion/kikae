@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Carousel } from '@/components/ui/carousel';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Chip } from '@/components/ui/chip';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -72,8 +73,7 @@ const showcaseProduct: ProductCardProduct = {
   oldPrice: 15000,
   units: 5,
   thrift: true,
-  madeInNigeria: true,
-  rating: 4.5,
+  ratings: [{ rating: 4 }, { rating: 5 }],
   imageUrl: null,
 };
 
@@ -359,11 +359,40 @@ export default function DesignSystemContent() {
           </Row>
         </Section>
 
+        <Section title="Carousel">
+          <Carousel
+            slides={[
+              {
+                id: 1,
+                title: 'Makeup',
+                text: 'View Makeup services',
+                imageUrl: 'https://media.test/profile-pic/x.webp',
+                href: '/makeup',
+              },
+              {
+                id: 3,
+                title: 'Stores',
+                text: 'View Various Stores',
+                imageUrl: 'https://media.test/profile-pic/y.webp',
+                href: '/stores',
+              },
+              {
+                id: 4,
+                title: 'Freebies',
+                text: 'View Freebies',
+                imageUrl: null,
+                href: '/freebies',
+              },
+            ]}
+            onSlidePress={() => {}}
+          />
+        </Section>
+
         <Section title="ProductCard">
           <Row>
             <ProductCard product={showcaseProduct} width={160} />
             <ProductCard
-              product={{ ...showcaseProduct, id: 2, price: 0, oldPrice: null, units: 0, rating: null }}
+              product={{ ...showcaseProduct, id: 2, price: 0, oldPrice: null, units: 0, ratings: [] }}
               liked
               width={160}
             />

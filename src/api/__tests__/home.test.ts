@@ -16,7 +16,7 @@ describe('HomeDataSchema', () => {
           units: '5',
           thrift: 0,
           made_in_nigeria: 1,
-          rating: '4.5',
+          ratings: [{ rating: 4.5 }],
           store: {
             id: 'uuid-store',
             name: 'Ada Threads',
@@ -41,7 +41,7 @@ describe('HomeDataSchema', () => {
           units: 0,
           thrift: null,
           made_in_nigeria: null,
-          rating: null,
+          ratings: [],
           store: { id: 2, name: 'X', logo: null },
           media: [],
           likes: [],
@@ -72,7 +72,7 @@ describe('HomeDataSchema', () => {
     expect(product.units).toBe(5);
     expect(product.thrift).toBe(false);
     expect(product.made_in_nigeria).toBe(true);
-    expect(product.rating).toBe(4.5);
+    expect(product.ratings).toEqual([{ rating: 4.5 }]);
 
     // Sensitive fields never reach the parsed output.
     const json = JSON.stringify(parsed);

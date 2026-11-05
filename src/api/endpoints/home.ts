@@ -29,6 +29,10 @@ const StoreSchema = z.object({
   logo: z.string().nullable(),
 });
 
+const RatingSchema = z.object({
+  rating: z.coerce.number(),
+});
+
 export const ProductSchema = z.object({
   id,
   name: z.string(),
@@ -38,10 +42,7 @@ export const ProductSchema = z.object({
   units: z.coerce.number().int().nonnegative(),
   thrift: bool.nullable(),
   made_in_nigeria: bool.optional(),
-  rating: z
-    .union([z.number(), z.string()])
-    .transform((value) => Number(value))
-    .nullable(),
+  ratings: z.array(RatingSchema).optional().default([]),
   store: StoreSchema,
   media: z.array(MediaSchema).optional().default([]),
   likes: z.array(LikeSchema).optional().default([]),

@@ -24,8 +24,7 @@ export function toCardProduct(product: Product): ProductCardProduct {
     oldPrice: product.old_price,
     units: product.units,
     thrift: product.thrift,
-    madeInNigeria: product.made_in_nigeria,
-    rating: product.rating,
+    ratings: product.ratings.map((entry) => ({ rating: entry.rating })),
     imageUrl: mediaUrl(product.media[0]?.url ?? null),
   };
 }

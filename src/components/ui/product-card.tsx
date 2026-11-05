@@ -25,8 +25,8 @@ export interface ProductCardProduct {
   oldPrice: number | null;
   units: number;
   thrift: boolean | null;
-  madeInNigeria: boolean | undefined;
-  rating: number | null;
+  /** Individual ratings; the summary is derived from this array. */
+  ratings: { rating: number }[];
   imageUrl: string | null;
 }
 
@@ -52,10 +52,22 @@ function OverlayLabel({ children }: { children: ReactNode }) {
 }
 
 /**
- * Uniform 4:5 product card: image, name, store, price (with optional
- * strikethrough old price), rating, and up to two image overlays (badges +
- * "Sold out"). The card is a link to `/product/[id]`; the wishlist heart is a
- * sibling `IconButton` (never nested inside the link).
+ * Rating summary exactly as the legacy card computed it: the rounded average of
+ * `ratings[].rating`, shown only when ratings exist. The rating field shape is
+ * UNVERIFIED (all samples have empty `ratings` arrays) — copied from the old
+ * `ShirtCard` and guarded so it can never be NaN.
+ */
+function averageRating(ratings: { rating: number }[]): number | null {
+  if (ratings.length === 0) return null;
+  const sum = ratings.reduce((acc, entry) => acc + entry.rating, 0);
+  return Math.round(sum / ratings.length);
+}
+
+/**
+ * Uniform 4:5 product card. The card link wraps the image, name and store; the
+ * price row (price left, wishlist heart right) and rating are siblings so the
+ * heart stays outside the link. The only badge is Thrift; "Sold out" overlays
+ * when `units` is 0.
  */
 export function ProductCard({
   product,
@@ -71,82 +83,80 @@ export function ProductCard({
     product.oldPrice != null && product.oldPrice > product.price
       ? product.oldPrice
       : null;
+  const rating = averageRating(product.ratings);
 
   return (
     <View style={width ? { width } : { flex: 1 }}>
-      <View className="relative">
-        <Link href={`/product/${product.id}` as Href} asChild>
-          <Pressable
-            accessibilityRole="link"
-            accessibilityLabel={`${product.name}, ${priceLabel}`}
-            className={clsx('rounded-lg', focusRing)}
-          >
-            <View className="relative">
-              <Image
-                source={product.imageUrl}
-                alt={product.name}
-                className="w-full rounded-lg"
-                style={{ aspectRatio: CARD_ASPECT }}
-              />
-              {(product.thrift || product.madeInNigeria) && (
-                <View className="absolute left-8 top-8 flex-row flex-wrap gap-4">
-                  {product.thrift ? <OverlayLabel>Thrift</OverlayLabel> : null}
-                  {product.madeInNigeria ? (
-                    <OverlayLabel>Made in Nigeria</OverlayLabel>
-                  ) : null}
-                </View>
-              )}
-              {soldOut ? (
-                <View className="absolute inset-0 items-center justify-center">
-                  <OverlayLabel>Sold out</OverlayLabel>
-                </View>
-              ) : null}
-            </View>
-            <View className="gap-4 pt-8">
-              <Text variant="subhead" color="fg" numberOfLines={2}>
-                {product.name}
-              </Text>
-              <Text variant="caption" color="fg-muted" numberOfLines={1}>
-                {product.storeName}
-              </Text>
-              <View className="flex-row items-baseline gap-8">
-                {free ? (
-                  <Text variant="subhead" color="fg" weight="bold">
-                    Free
-                  </Text>
-                ) : (
-                  <Price amount={product.price} emphasis variant="subhead" />
-                )}
-                {oldPrice != null ? (
-                  <Text
-                    variant="caption"
-                    color="fg-muted"
-                    style={{ textDecorationLine: 'line-through' }}
-                  >
-                    {formatNaira(oldPrice)}
-                  </Text>
-                ) : null}
+      <Link href={`/product/${product.id}` as Href} asChild>
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel={`${product.name}, ${priceLabel}`}
+          className={clsx('rounded-lg', focusRing)}
+        >
+          <View className="relative">
+            <Image
+              source={product.imageUrl}
+              alt={product.name}
+              className="w-full rounded-lg"
+              style={{ aspectRatio: CARD_ASPECT }}
+            />
+            {product.thrift ? (
+              <View className="absolute left-8 top-8">
+                <OverlayLabel>Thrift</OverlayLabel>
               </View>
-              {product.rating != null ? (
-                <View className="flex-row items-center gap-4">
-                  <Icon name="star" size={16} color="warning" aria-hidden />
-                  <Text variant="caption" color="fg-muted">
-                    {product.rating.toFixed(1)}
-                  </Text>
-                </View>
-              ) : null}
-            </View>
-          </Pressable>
-        </Link>
-        <View className="absolute right-8 top-8">
-          <IconButton
-            icon={liked ? 'heart' : 'heart-outline'}
-            label={liked ? 'Saved' : 'Add to wishlist'}
-            disabled={liked || saving}
-            onPress={onLikePress}
-          />
+            ) : null}
+            {soldOut ? (
+              <View className="absolute inset-0 items-center justify-center">
+                <OverlayLabel>Sold out</OverlayLabel>
+              </View>
+            ) : null}
+          </View>
+          <View className="gap-4 pt-8">
+            <Text variant="subhead" color="fg" numberOfLines={2}>
+              {product.name}
+            </Text>
+            <Text variant="caption" color="fg-muted" numberOfLines={1}>
+              {product.storeName}
+            </Text>
+          </View>
+        </Pressable>
+      </Link>
+
+      <View className="flex-row items-center justify-between pt-8">
+        <View className="flex-row items-baseline gap-8">
+          {free ? (
+            <Text variant="subhead" color="fg" weight="bold">
+              Free
+            </Text>
+          ) : (
+            <Price amount={product.price} emphasis variant="subhead" />
+          )}
+          {oldPrice != null ? (
+            <Text
+              variant="caption"
+              color="fg-muted"
+              style={{ textDecorationLine: 'line-through' }}
+            >
+              {formatNaira(oldPrice)}
+            </Text>
+          ) : null}
         </View>
+        <IconButton
+          icon={liked ? 'heart' : 'heart-outline'}
+          label={liked ? 'Saved' : 'Add to wishlist'}
+          disabled={liked || saving}
+          onPress={onLikePress}
+        />
       </View>
+
+      {rating != null ? (
+        <View className="flex-row items-center gap-4 pt-8">
+          <Icon name="star" size={16} color="warning" aria-hidden />
+          <Text variant="caption" color="fg-muted">
+            {rating}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 }
