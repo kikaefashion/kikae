@@ -1,4 +1,7 @@
-import { HomeDataSchema } from '../endpoints/home';
+import { server } from '@/test-utils/msw/server';
+import { getHomeStatusFalse, getHomeSuccess } from '@/test-utils/msw/handlers';
+
+import { fetchHome, HomeDataSchema } from '../endpoints/home';
 
 describe('HomeDataSchema', () => {
   it('strips sensitive fields and filters non-approved products', () => {
@@ -86,5 +89,19 @@ describe('HomeDataSchema', () => {
 
     // Unknown top-level keys are dropped.
     expect('sponsored' in parsed).toBe(false);
+  });
+});
+
+describe('fetchHome', () => {
+  it('returns parsed home data from the real endpoint', async () => {
+    server.use(getHomeSuccess);
+    const data = await fetchHome();
+    expect(data.new_arrivals[0].name).toBe('Ankara dress');
+    expect(data.trending_categories[0].name).toBe('Fashion');
+  });
+
+  it('treats a false status as an error', async () => {
+    server.use(getHomeStatusFalse);
+    await expect(fetchHome()).rejects.toMatchObject({ kind: 'api' });
   });
 });

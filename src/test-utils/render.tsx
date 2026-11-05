@@ -7,6 +7,8 @@ import {
 import type { ReactElement, ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { ToastProvider } from '@/components/ui/toast';
+
 // Safe-area metrics are not available from native code in Jest, so provide
 // deterministic initial metrics so SafeAreaProvider renders its children.
 const INITIAL_METRICS = {
@@ -26,7 +28,7 @@ function AllTheProviders({ children }: { children: ReactNode }) {
   return (
     <SafeAreaProvider initialMetrics={INITIAL_METRICS}>
       <QueryClientProvider client={createTestQueryClient()}>
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
   );

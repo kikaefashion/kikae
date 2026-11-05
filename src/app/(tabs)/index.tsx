@@ -1,12 +1,5 @@
-import { ScreenLayout } from '@/components/navigation/screen-layout';
-import { Text } from '@/components/ui/text';
+import { HomeScreen } from '@/features/home/home-screen';
 
-export default function HomeScreen() {
-  return (
-    <ScreenLayout>
-      <Text variant="title-1" color="fg" accessibilityRole="header">
-        Home
-      </Text>
-    </ScreenLayout>
-  );
+export default function HomeRoute() {
+  return <HomeScreen />;
 }

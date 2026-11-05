@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw';
 
 import type { ProductCategory } from '@/api/endpoints/categories';
 import type { CurrentUser } from '@/api/endpoints/current-user';
+import type { Category, HomeData, Product } from '@/api/endpoints/home';
 
 /** Matches the test env in `jest.setup.ts` (`EXPO_PUBLIC_API_URL`). */
 export const API_URL = 'https://api.test';
@@ -123,5 +124,101 @@ export const loginNetworkError = http.post(`${AUTH_URL}/login`, () =>
   HttpResponse.error(),
 );
 
+function makeHomeProduct(overrides: Partial<Product> = {}): Product {
+  return {
+    id: 1,
+    name: 'Ankara dress',
+    price: 12000,
+    old_price: 15000,
+    status: 'approved',
+    units: 5,
+    thrift: false,
+    made_in_nigeria: true,
+    rating: 4.5,
+    store: { id: 'store-1', name: 'Ada Threads', logo: 'profile-pic/logo.webp' },
+    media: [{ url: 'profile-pic/dress.webp' }],
+    likes: [],
+    ...overrides,
+  };
+}
+
+export const homeProducts: Product[] = [
+  makeHomeProduct({ id: 1, name: 'Ankara dress', thrift: true }),
+  makeHomeProduct({
+    id: 2,
+    name: 'Linen shirt',
+    price: 0,
+    old_price: null,
+    units: 0,
+    thrift: false,
+    made_in_nigeria: false,
+    rating: null,
+    store: { id: 'store-2', name: 'Kiki Lagos', logo: null },
+    media: [{ url: 'profile-pic/shirt.webp' }],
+  }),
+];
+
+export const trendingCategories: Category[] = [
+  { id: 1, name: 'Fashion', product_count: 3, total_views: 10, image: null },
+  { id: 2, name: 'Beauty', product_count: 0, total_views: 0, image: null },
+];
+
+export const homeData: HomeData = {
+  new_arrivals: homeProducts,
+  featured_products: [homeProducts[0]],
+  thrift_products: [homeProducts[0]],
+  freebies: [homeProducts[1]],
+  trending_categories: trendingCategories,
+};
+
+const homeEnvelope = (data: unknown) =>
+  HttpResponse.json({ status: true, message: 'ok', data });
+
+export const getHomeSuccess = http.get(`${API_URL}/customer/v2/home`, () =>
+  homeEnvelope(homeData),
+);
+
+export const getHomeEmpty = http.get(`${API_URL}/customer/v2/home`, () =>
+  homeEnvelope({
+    new_arrivals: [],
+    featured_products: [],
+    thrift_products: [],
+    freebies: [],
+    trending_categories: [],
+  }),
+);
+
+export const getHomeOnlyNewArrivals = http.get(
+  `${API_URL}/customer/v2/home`,
+  () =>
+    homeEnvelope({
+      new_arrivals: homeProducts,
+      featured_products: [],
+      thrift_products: [],
+      freebies: [],
+      trending_categories: [],
+    }),
+);
+
+export const getHomeStatusFalse = http.get(`${API_URL}/customer/v2/home`, () =>
+  HttpResponse.json({ status: false, message: 'failed' }),
+);
+
+export const getHomeServerError = http.get(`${API_URL}/customer/v2/home`, () =>
+  HttpResponse.json({ message: 'Server error' }, { status: 500 }),
+);
+
+export const likeProductSuccess = http.post(`${API_URL}/likeProduct`, () =>
+  HttpResponse.json({ status: true, message: 'ok', data: { liked: true } }),
+);
+
+export const likeProductFailure = http.post(`${API_URL}/likeProduct`, () =>
+  HttpResponse.json({ status: false, message: 'failed' }),
+);
+
 /** Default handlers registered in `jest.setup.ts`. */
-export const handlers = [getCurrentUserSuccess, getCategoriesSuccess];
+export const handlers = [
+  getCurrentUserSuccess,
+  getCategoriesSuccess,
+  getHomeSuccess,
+];
