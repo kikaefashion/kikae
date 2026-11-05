@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw';
 
 import type { ProductCategory } from '@/api/endpoints/categories';
 import type { CurrentUser } from '@/api/endpoints/current-user';
+import type { Banner } from '@/api/endpoints/banners';
 import type { Category, HomeData, Product } from '@/api/endpoints/home';
 
 /** Matches the test env in `jest.setup.ts` (`EXPO_PUBLIC_API_URL`). */
@@ -216,9 +217,54 @@ export const likeProductFailure = http.post(`${API_URL}/likeProduct`, () =>
   HttpResponse.json({ status: false, message: 'failed' }),
 );
 
+/** Deliberately out of order — the carousel sorts by `position`. */
+export const banners: Banner[] = [
+  {
+    id: 3,
+    title: 'Stores',
+    text: 'View Various Stores',
+    file: 'profile-pic/stores.webp',
+    position: 2,
+    url: '/stores',
+  },
+  {
+    id: 4,
+    title: 'Freebies',
+    text: 'View Freebies',
+    file: 'profile-pic/freebies.webp',
+    position: 3,
+    url: '/freebies',
+  },
+  {
+    id: 1,
+    title: 'Makeup',
+    text: 'View Makeup services',
+    file: 'profile-pic/makeup.webp',
+    position: 1,
+    url: '/',
+  },
+];
+
+export const getBannersSuccess = http.get(`${API_URL}/banners/all`, () =>
+  HttpResponse.json({ status: true, data: banners }),
+);
+
+export const getBannersEmpty = http.get(`${API_URL}/banners/all`, () =>
+  HttpResponse.json({ status: true, data: [] }),
+);
+
+export const getBannersServerError = http.get(`${API_URL}/banners/all`, () =>
+  HttpResponse.json({ message: 'Server error' }, { status: 500 }),
+);
+
+export const getBannersStatusFalse = http.get(`${API_URL}/banners/all`, () =>
+  HttpResponse.json({ status: false, message: 'failed' }),
+);
+
 /** Default handlers registered in `jest.setup.ts`. */
 export const handlers = [
   getCurrentUserSuccess,
   getCategoriesSuccess,
   getHomeSuccess,
+  getBannersSuccess,
 ];

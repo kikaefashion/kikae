@@ -15,6 +15,7 @@ export type TextColor =
   | 'fg-placeholder'
   | 'on-primary'
   | 'on-primary-disabled'
+  | 'on-scrim'
   | 'icon'
   | 'icon-muted'
   | 'primary'
@@ -33,6 +34,7 @@ export const textColorClasses: Record<TextColor, string> = {
   'fg-placeholder': 'text-fg-placeholder',
   'on-primary': 'text-on-primary',
   'on-primary-disabled': 'text-on-primary-disabled',
+  'on-scrim': 'text-on-scrim',
   icon: 'text-icon',
   'icon-muted': 'text-icon-muted',
   primary: 'text-primary',

@@ -62,6 +62,7 @@ export const roles = {
     'fg-placeholder': '#737373',
     'on-primary': '#FFFFFF',
     'on-primary-disabled': '#525252',
+    'on-scrim': '#FFFFFF',
     primary: '#000000',
     'primary-pressed': '#262626',
     'primary-disabled': '#D4D4D4',
@@ -85,6 +86,7 @@ export const roles = {
     'fg-placeholder': '#A3A3A3',
     'on-primary': '#000000',
     'on-primary-disabled': '#A3A3A3',
+    'on-scrim': '#FFFFFF',
     primary: '#FFFFFF',
     'primary-pressed': '#E5E5E5',
     'primary-disabled': '#404040',
@@ -169,6 +171,7 @@ export const sizes = {
   image: {
     card: '4:5',
     banner: '16:9',
+    'banner-wide': '5:2',
     square: '1:1',
     story: '9:16',
   },
