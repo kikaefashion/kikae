@@ -86,7 +86,7 @@ export async function mockBackend(
     });
   });
 
-  await page.route(`${API_URL}/customer/v2/home`, async (route) => {
+  await page.route(/\/customer\/v2\/home/, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -99,6 +99,19 @@ export async function mockBackend(
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ status: true, message: 'ok', data: { liked: true } }),
+    });
+  });
+
+  // Serve a 1x1 image for media requests so product images never hit the
+  // "unmocked dummy host" guard and trigger a real network load.
+  await page.route(`${MEDIA_URL}/**`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'image/png',
+      body: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+        'base64',
+      ),
     });
   });
 }
