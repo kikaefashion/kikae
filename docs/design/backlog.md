@@ -12,6 +12,8 @@ what would change. None of these are in scope for the first rebuild pass.
   `sponsored_limit` is pinned to 0 today).
 - **Vendor highlights row** — add a stores row when the backend provides store data on the home
   payload.
+- **Made in Nigeria filter** — a made-in-Nigeria discovery filter/surface once the backend exposes
+  the flag reliably.
 
 
 ## Custom orders (F13)
