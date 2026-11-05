@@ -133,6 +133,20 @@ const HomeEnvelopeSchema = z.object({
   data: HomeDataSchema,
 });
 
+const BannerSchema = z.object({
+  id: z.union([z.number().int(), z.string()]),
+  title: z.string(),
+  text: z.string(),
+  file: z.string(),
+  position: z.number().int(),
+  url: z.string(),
+});
+
+const BannerEnvelopeSchema = z.object({
+  status: z.boolean(),
+  data: z.array(BannerSchema),
+});
+
 function load<T>(filename: string, schema: z.ZodType<T>): T {
   const raw = readFileSync(join(FIXTURES_DIR, filename), 'utf8');
   return schema.parse(JSON.parse(raw));
@@ -144,6 +158,7 @@ export const loginUnverified = load('login-unverified.json', LoginErrorSchema);
 export const currentUser = load('current-user.json', CurrentUserEnvelopeSchema);
 export const categories = load('categories.json', CategoriesEnvelopeSchema);
 export const home = load('home.json', HomeEnvelopeSchema);
+export const banners = load('banners.json', BannerEnvelopeSchema);
 
 export type CurrentUser = z.infer<typeof CurrentUserSchema>;
 export type ProductCategory = z.infer<typeof ProductCategorySchema>;

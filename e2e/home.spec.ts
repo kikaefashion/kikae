@@ -14,6 +14,8 @@ async function openHomeAsGuest(page: Page): Promise<void> {
     page.getByRole('tab', { name: 'Home', exact: true }),
   ).toBeVisible();
   await expect(page.getByText('Ankara dress').first()).toBeVisible();
+  // The banner carousel renders from the second (banners) request.
+  await expect(page.getByText('View Makeup services').first()).toBeVisible();
 }
 
 test.describe('home', () => {

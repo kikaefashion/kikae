@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import {
+  banners,
   categories,
   currentUser,
   home,
@@ -91,6 +92,14 @@ export async function mockBackend(
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify(home),
+    });
+  });
+
+  await page.route(`${API_URL}/banners/all`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(banners),
     });
   });
 

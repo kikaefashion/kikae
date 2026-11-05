@@ -1,0 +1,29 @@
+{
+  "status": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Makeup",
+      "text": "View Makeup services",
+      "file": "profile-pic/banner-makeup.webp",
+      "position": 1,
+      "url": "/"
+    },
+    {
+      "id": 3,
+      "title": "Stores",
+      "text": "View Various Stores",
+      "file": "profile-pic/banner-stores.webp",
+      "position": 2,
+      "url": "/stores"
+    },
+    {
+      "id": 4,
+      "title": "Freebies",
+      "text": "View Freebies",
+      "file": "profile-pic/banner-freebies.webp",
+      "position": 3,
+      "url": "/freebies"
+    }
+  ]
+}
