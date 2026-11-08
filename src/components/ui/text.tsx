@@ -1,9 +1,15 @@
 import type { ComponentProps } from 'react';
-import { Text as RNText } from 'react-native';
+import { Platform, Text as RNText } from 'react-native';
 import { clsx } from 'tailwind-variants';
 
 import { textColorClasses, type TextColor } from '@/components/ui/colors';
-import { typeWeights, type TypeToken } from '@/theme/tokens';
+import {
+  fontFamilies,
+  fontFamilyForWeight,
+  type as typeScale,
+  typeWeights,
+  type TypeToken,
+} from '@/theme/tokens';
 
 export type TextVariant = TypeToken;
 export type TextWeight = keyof typeof typeWeights;
@@ -30,6 +36,18 @@ export interface TextProps extends ComponentProps<typeof RNText> {
   weight?: TextWeight;
 }
 
+/** Resolves a weight to its Poppins family + platform fallback. */
+function fontStyleForWeight(weight: number) {
+  const token = fontFamilyForWeight(weight);
+  const family =
+    Platform.OS === 'web'
+      ? fontFamilies[token].stack
+      : fontFamilies[token].family;
+  // Each weight is its own family, so keep `fontWeight` normal to avoid Android
+  // synthesizing bold on top of an already-bold face.
+  return { fontFamily: family, fontWeight: 'normal' as const };
+}
+
 /**
  * Theme-aware text primitive. Uses the type scale + semantic color tokens, and
  * defaults to a 200% max font scale (fixed-height elements opt into 1.3).
@@ -43,11 +61,15 @@ export function Text({
   maxFontSizeMultiplier = 2,
   ...props
 }: TextProps) {
+  const resolvedWeight = weight
+    ? typeWeights[weight]
+    : typeScale[variant].weight;
+
   return (
     <RNText
       {...props}
       className={clsx(typeClasses[variant], textColorClasses[color], className)}
-      style={[weight ? { fontWeight: typeWeights[weight] } : null, style]}
+      style={[fontStyleForWeight(resolvedWeight), style]}
       maxFontSizeMultiplier={maxFontSizeMultiplier}
     />
   );

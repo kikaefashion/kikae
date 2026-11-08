@@ -136,6 +136,38 @@ export const type = {
 export type TypeToken = keyof typeof type;
 export const typeWeights = { regular: 400, medium: 500, bold: 700 } as const;
 
+/**
+ * §7b Font families. Poppins (OFL) at 400/500/700 only. `family` is the native
+ * face (the platform default is the fallback); `stack` is the web font-family
+ * value with the old system stack as fallback.
+ */
+export const fontFamilies = {
+  regular: {
+    family: 'Poppins_400Regular',
+    stack:
+      "Poppins_400Regular, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  },
+  medium: {
+    family: 'Poppins_500Medium',
+    stack:
+      "Poppins_500Medium, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  },
+  bold: {
+    family: 'Poppins_700Bold',
+    stack:
+      "Poppins_700Bold, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  },
+} as const;
+
+export type FontFamilyToken = keyof typeof fontFamilies;
+
+/** Maps a numeric weight (400/500/700) to its Poppins family token. */
+export function fontFamilyForWeight(weight: number): FontFamilyToken {
+  if (weight >= 700) return 'bold';
+  if (weight >= 500) return 'medium';
+  return 'regular';
+}
+
 /** §8 Spacing scale (4px base). */
 export const spacing = [
   0, 2, 4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, 96,

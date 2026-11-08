@@ -18,6 +18,7 @@ describe('Text', () => {
   it('applies a weight override', async () => {
     await render(<Text weight="bold">Bold</Text>);
     const flattened = StyleSheet.flatten(screen.getByText('Bold').props.style);
-    expect(flattened.fontWeight).toBe(700);
+    expect(flattened.fontWeight).toBe('normal');
+    expect(flattened.fontFamily).toBe('Poppins_700Bold');
   });
 });

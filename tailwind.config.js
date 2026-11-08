@@ -54,20 +54,17 @@ function buildRadii() {
 function buildFontSize() {
   const fontSize = {};
   for (const [name, spec] of Object.entries(tokens.type)) {
-    fontSize[name] = [
-      `${spec.size}px`,
-      { lineHeight: `${spec.lineHeight}px`, fontWeight: String(spec.weight) },
-    ];
+    fontSize[name] = [`${spec.size}px`, { lineHeight: `${spec.lineHeight}px` }];
   }
   return fontSize;
 }
 
-function buildFontWeight() {
-  const weights = {};
-  for (const [name, value] of Object.entries(tokens.typeWeights)) {
-    weights[name] = String(value);
+function buildFontFamily() {
+  const fontFamily = {};
+  for (const [name, spec] of Object.entries(tokens.fontFamilies)) {
+    fontFamily[name] = spec.stack;
   }
-  return weights;
+  return fontFamily;
 }
 
 /** @type {import('tailwindcss').Config} */
@@ -93,7 +90,7 @@ module.exports = {
     spacing: buildSpacing(),
     borderRadius: buildRadii(),
     fontSize: buildFontSize(),
-    fontWeight: buildFontWeight(),
+    fontFamily: buildFontFamily(),
   },
   plugins: [],
 };
