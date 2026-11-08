@@ -15,10 +15,10 @@ describe('resolveGuards', () => {
     });
   });
 
-  it('keeps guests on tabs', () => {
+  it('keeps guests on tabs and lets them open login', () => {
     expect(resolveGuards('signedOut', true)).toEqual({
       tabs: true,
-      auth: false,
+      auth: true,
     });
   });
 

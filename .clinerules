@@ -15,3 +15,4 @@
 - Every bug fix ships with a regression test.
 - A test must fail if the feature it covers is broken.
 - When a new feature folder is added, it must be added to `collectCoverageFrom` in `jest.config.js` in the same PR, together with tests.
+- Every route sets a unique document title in the format "Page | Kikae". Dynamic pages (product, store) set it from their data.

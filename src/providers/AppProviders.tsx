@@ -5,6 +5,7 @@ import { useEffect, useMemo, type ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { createQueryClient } from '@/api/query-client';
+import { ToastProvider } from '@/components/ui/toast';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { restoreSession } from '@/session/session-store';
 
@@ -28,7 +29,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <SafeAreaProvider>
       <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
         <QueryClientProvider client={queryClient}>
-          {children}
+          <ToastProvider>{children}</ToastProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </SafeAreaProvider>

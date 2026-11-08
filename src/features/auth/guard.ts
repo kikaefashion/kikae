@@ -18,6 +18,9 @@ export function resolveGuards(
   const authorized = status === 'signedIn' || guest;
   return {
     tabs: loading || authorized,
-    auth: !loading && !authorized,
+    // Anyone not signed in can open the login screen — guests included — so a
+    // protected action (e.g. the wishlist heart) can redirect a guest there to
+    // sign in without being bounced back to the tabs.
+    auth: !loading && status !== 'signedIn',
   };
 }

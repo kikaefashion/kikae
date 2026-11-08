@@ -91,11 +91,13 @@ the note at the end).
 
 - **Fixed-ratio (grid):** 4:5 image. **Variable-ratio (masonry):** natural image height, stable
   aspect ratio from `tokens.md`. `lg` radius, `surface` bg + 1px `line`.
-- **Overlays: at most two items** (e.g., rating + one badge) with a `scrim` — never a gradient.
-- Below: name (2 lines), vendor ("By …"), `Price`, and a wishlist heart.
+- **Overlays: at most two items** (Thrift badge + "Sold out") with a `scrim` — never a gradient.
+  The only badge is **Thrift** (no "Made in Nigeria").
+- Below: name (2 lines), vendor ("By …"), then a price row: `Price` left, wishlist heart right.
+  Rating summary (star + rounded average) shown only when ratings exist, never NaN. Strikethrough
+  old price when `old_price > price`; "Free" when price is 0.
 - **A11y:** the navigating card is `role="link"` labelled with name + price. The **heart is a
-  sibling, not a child**, and announces its toggle state with a label that changes —
-  "Add to wishlist" ↔ "Remove from wishlist".
+  sibling, not a child**, label "Add to wishlist" ↔ "Saved".
 
 ### StoreCard / StoreCircle
 
@@ -143,9 +145,12 @@ the note at the end).
 
 ### Carousel
 
-- Horizontal paged slider (banners/products) with dot indicators and prev/next buttons (web).
-  Autoplay respects reduced motion; **non-drag alternative** = dots + next/prev. **A11y:** slides
-  labelled, indicators `role="tablist"`.
+- Horizontal paged banner slider: one slide per banner, ordered by `position`. Ratio `img-banner`
+  (16:9), wider `img-banner-wide` at 768+. Loads only the current and next images.
+- Title + text overlaid on a solid `scrim`; a slide is a link only when its `url` is whitelisted.
+- Autoplay ~6s with a pause/play button; none under reduced motion; stops after any interaction
+  and pauses when backgrounded or off screen. Prev/next buttons + labelled dots ("Slide 2 of 3");
+  keyboard left/right on web. **A11y:** slides labelled, dots/buttons `role`/label.
 
 ### ReviewCard
 

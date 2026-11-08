@@ -1,0 +1,113 @@
+{
+  "status": true,
+  "message": "ok",
+  "data": {
+    "new_arrivals": [
+      {
+        "id": 1,
+        "name": "Ankara dress",
+        "price": 12000,
+        "old_price": 15000,
+        "status": "approved",
+        "units": 5,
+        "thrift": true,
+        "made_in_nigeria": true,
+        "rating": 4.5,
+        "store": {
+          "id": "store-1",
+          "name": "Ada Threads",
+          "logo": "profile-pic/logo.webp"
+        },
+        "media": [{ "url": "profile-pic/dress.webp" }],
+        "likes": []
+      },
+      {
+        "id": 2,
+        "name": "Linen shirt",
+        "price": 0,
+        "old_price": null,
+        "status": "approved",
+        "units": 0,
+        "thrift": false,
+        "made_in_nigeria": false,
+        "rating": null,
+        "store": {
+          "id": "store-2",
+          "name": "Kiki Lagos",
+          "logo": null
+        },
+        "media": [{ "url": "profile-pic/shirt.webp" }],
+        "likes": []
+      }
+    ],
+    "featured_products": [
+      {
+        "id": 1,
+        "name": "Ankara dress",
+        "price": 12000,
+        "old_price": 15000,
+        "status": "approved",
+        "units": 5,
+        "thrift": true,
+        "made_in_nigeria": true,
+        "rating": 4.5,
+        "store": {
+          "id": "store-1",
+          "name": "Ada Threads",
+          "logo": "profile-pic/logo.webp"
+        },
+        "media": [{ "url": "profile-pic/dress.webp" }],
+        "likes": []
+      }
+    ],
+    "thrift_products": [
+      {
+        "id": 1,
+        "name": "Ankara dress",
+        "price": 12000,
+        "old_price": 15000,
+        "status": "approved",
+        "units": 5,
+        "thrift": true,
+        "made_in_nigeria": true,
+        "rating": 4.5,
+        "store": {
+          "id": "store-1",
+          "name": "Ada Threads",
+          "logo": "profile-pic/logo.webp"
+        },
+        "media": [{ "url": "profile-pic/dress.webp" }],
+        "likes": []
+      }
+    ],
+    "freebies": [
+      {
+        "id": 2,
+        "name": "Linen shirt",
+        "price": 0,
+        "old_price": null,
+        "status": "approved",
+        "units": 0,
+        "thrift": false,
+        "made_in_nigeria": false,
+        "rating": null,
+        "store": {
+          "id": "store-2",
+          "name": "Kiki Lagos",
+          "logo": null
+        },
+        "media": [{ "url": "profile-pic/shirt.webp" }],
+        "likes": []
+      }
+    ],
+    "trending_categories": [
+      {
+        "id": 1,
+        "name": "Fashion",
+        "product_count": 3,
+        "total_views": 10,
+        "image": null
+      }
+    ]
+  }
+}

@@ -1,6 +1,9 @@
 import type { ComponentType } from 'react';
 import { Redirect, type Href } from 'expo-router';
 
+import { DocumentTitle } from '@/components/document-title';
+import { PAGE_TITLES } from '@/config/titles';
+
 // Dev-only route. The showcase is `require`d inside a `__DEV__` branch so
 // Metro's production minifier drops the module from the bundle; in production
 // this route redirects home instead of rendering a blank page.
@@ -13,5 +16,10 @@ if (__DEV__) {
 
 export default function DesignSystemScreen() {
   if (!__DEV__) return <Redirect href={'/' as Href} />;
-  return Showcase ? <Showcase /> : null;
+  return Showcase ? (
+    <>
+      <DocumentTitle title={PAGE_TITLES.designSystem} />
+      <Showcase />
+    </>
+  ) : null;
 }

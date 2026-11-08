@@ -28,6 +28,7 @@
   --kikae-fg-placeholder: #737373;
   --kikae-on-primary: #ffffff;
   --kikae-on-primary-disabled: #525252;
+  --kikae-on-scrim: #ffffff;
   --kikae-primary: #000000;
   --kikae-primary-pressed: #262626;
   --kikae-primary-disabled: #d4d4d4;
@@ -57,6 +58,7 @@
   --kikae-fg-placeholder: #a3a3a3;
   --kikae-on-primary: #000000;
   --kikae-on-primary-disabled: #a3a3a3;
+  --kikae-on-scrim: #ffffff;
   --kikae-primary: #ffffff;
   --kikae-primary-pressed: #e5e5e5;
   --kikae-primary-disabled: #404040;
@@ -87,6 +89,7 @@
     --kikae-fg-placeholder: #a3a3a3;
     --kikae-on-primary: #000000;
     --kikae-on-primary-disabled: #a3a3a3;
+    --kikae-on-scrim: #ffffff;
     --kikae-primary: #ffffff;
     --kikae-primary-pressed: #e5e5e5;
     --kikae-primary-disabled: #404040;
