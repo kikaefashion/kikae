@@ -2,6 +2,7 @@
 
 Items deferred until after the monochrome rebuild. Each item lists the affected feature and
 what would change. None of these are in scope for the first rebuild pass.
+
 ## Home feed
 
 - **Persisted query cache** — persist the `['home']` payload so a cold start goes straight to
@@ -14,7 +15,7 @@ what would change. None of these are in scope for the first rebuild pass.
   payload.
 - **Made in Nigeria filter** — a made-in-Nigeria discovery filter/surface once the backend exposes
   the flag reliably.
-
+- Home sections for Made in Nigeria, Beauty and Hair (own endpoints): deferred; revisit after Discover, lazy-loaded, ideally with a limit param.
 
 ## Custom orders (F13)
 
