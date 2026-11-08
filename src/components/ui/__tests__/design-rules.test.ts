@@ -27,10 +27,18 @@ function collectSourceFiles(dir: string): string[] {
 
 const files = collectSourceFiles(SRC);
 
+// The Text component is the single place that resolves font families/weights
+// from the tokens; everything else must use `<Text>` (or the tokens) instead.
+const TEXT_COMPONENT = join(SRC, 'components', 'ui', 'text.tsx');
+const fontRuleFiles = files.filter((file) => file !== TEXT_COMPONENT);
+
 const HEX =
   /#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/;
 // Tailwind arbitrary values always take the form `utility-[value]`.
 const ARBITRARY = /-\[[^\]]+\]/;
+const FONT_FAMILY = /\bfontFamily\s*:/;
+const FONT_WEIGHT = /\bfontWeight\s*:/;
+const FONT_CLASS = /\bfont-[a-z][a-z0-9-]*\b/;
 
 describe('design rules', () => {
   it('has source files to scan', () => {
@@ -42,4 +50,14 @@ describe('design rules', () => {
     expect(content).not.toMatch(HEX);
     expect(content).not.toMatch(ARBITRARY);
   });
+
+  it.each(fontRuleFiles)(
+    'does not hardcode font families or weights: %s',
+    (file) => {
+      const content = readFileSync(file, 'utf8');
+      expect(content).not.toMatch(FONT_FAMILY);
+      expect(content).not.toMatch(FONT_WEIGHT);
+      expect(content).not.toMatch(FONT_CLASS);
+    },
+  );
 });

@@ -61,7 +61,7 @@ export function TopBar({
       className="flex-row items-center justify-between border-b border-line bg-surface px-16"
       style={{ minHeight: height, paddingTop: insets.top }}
     >
-      <Text variant="title-3" weight="bold" color="fg">
+      <Text variant="title-3" weight="bold" color="fg" numberOfLines={1}>
         Kikae
       </Text>
       <View className="flex-row items-center gap-8">

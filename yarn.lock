@@ -983,6 +983,11 @@
   resolved "https://registry.yarnpkg.com/@expo-google-fonts/material-symbols/-/material-symbols-0.4.52.tgz#ae3475989e78dd542e7bbdb254fd4371004327e5"
   integrity sha512-iC9GRpj7WV0GENbHTYPtJqGjyy/7yI3soG9SrKTY1ta19cbMZm2HA0nUdIK8d6OD9uv1BZHAh3Zn/UWV57IeWg==
 
+"@expo-google-fonts/poppins@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/poppins/-/poppins-0.4.1.tgz#bf49b2a14a5d255fa3404fdef7bcbbb04025f0a4"
+  integrity sha512-LiX5oEryJqDt3UmWwr4oqf11hGMz/JEffkkNcZ3UtGwyoMFzXmBmTwcrAWrEttxypxmLNmPykDg+CY2VjKve9A==
+
 "@expo/cli@^58.1.19":
   version "58.1.19"
   resolved "https://registry.yarnpkg.com/@expo/cli/-/cli-58.1.19.tgz#e2197d8481be45306ae9bb5721a82a7fa3419fea"

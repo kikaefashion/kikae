@@ -15,6 +15,7 @@ describe('Price', () => {
     const flattened = StyleSheet.flatten(
       screen.getByText('₦1,500').props.style,
     );
-    expect(flattened.fontWeight).toBe(700);
+    expect(flattened.fontWeight).toBe('normal');
+    expect(flattened.fontFamily).toBe('Poppins_700Bold');
   });
 });

@@ -65,6 +65,16 @@ store.balance − unsettledAmount`). See `docs/backend-findings.md` (Backlog che
   `reference` is the recovery anchor and `/payments/verify/{reference}` is idempotent/re-runnable —
   no dedicated `tx_ref` session endpoint yet.)
 
+## Typography
+
+- **Self-hosted, subset woff2 web fonts with preload** — today Poppins loads at runtime as full TTFs;
+  self-host a subset (Latin + `₦`) as woff2 with `preload` + `font-display: swap` to cut the web font
+  data cost further.
+- **`expo-font` config plugin** — embed the three Poppins weights in native production builds via the
+  config plugin, avoiding the runtime `useFonts` load and the splash hold on native.
+- **Revisit the fourth weight** — Poppins ships 300 and 600 too; add one only if a real design need
+  (e.g. 600 for small bold labels) justifies the extra file size.
+
 ## Testing & tooling
 
 - **Route smoke tests (Playwright)** — once Playwright is set up in CI, add real browser smoke

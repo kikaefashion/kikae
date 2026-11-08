@@ -129,6 +129,8 @@ export const Button = forwardRef<ElementRef<typeof Pressable>, ButtonProps>(
           color={color}
           weight="medium"
           maxFontSizeMultiplier={1.3}
+          numberOfLines={1}
+          className="shrink"
         >
           {children}
         </Text>

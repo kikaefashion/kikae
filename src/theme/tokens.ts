@@ -118,23 +118,56 @@ export const focus = {
   imagery: { inner: '#FFFFFF', outer: '#000000' },
 } as const;
 
-/** §7 Type scale. Weights restricted to 400/500/700. */
+/** §7 Type scale. Weights restricted to 400/500/700. Line-heights raised for
+ * Poppins' taller ascender/descender metrics (no clipping at 200%). */
 export const type = {
-  display: { size: 34, lineHeight: 41, weight: 700 },
-  'title-1': { size: 28, lineHeight: 34, weight: 700 },
-  'title-2': { size: 22, lineHeight: 28, weight: 500 },
-  'title-3': { size: 20, lineHeight: 25, weight: 500 },
-  headline: { size: 17, lineHeight: 22, weight: 500 },
+  display: { size: 34, lineHeight: 44, weight: 700 },
+  'title-1': { size: 28, lineHeight: 36, weight: 700 },
+  'title-2': { size: 22, lineHeight: 30, weight: 500 },
+  'title-3': { size: 20, lineHeight: 27, weight: 500 },
+  headline: { size: 17, lineHeight: 24, weight: 500 },
   // iOS default; Android/web use 16 (see tokens.md §7).
-  body: { size: 17, lineHeight: 22, weight: 400 },
-  callout: { size: 15, lineHeight: 20, weight: 400 },
-  subhead: { size: 14, lineHeight: 19, weight: 500 },
-  footnote: { size: 13, lineHeight: 18, weight: 400 },
-  caption: { size: 12, lineHeight: 16, weight: 400 },
+  body: { size: 17, lineHeight: 24, weight: 400 },
+  callout: { size: 15, lineHeight: 21, weight: 400 },
+  subhead: { size: 14, lineHeight: 20, weight: 500 },
+  footnote: { size: 13, lineHeight: 19, weight: 400 },
+  caption: { size: 12, lineHeight: 17, weight: 400 },
 } as const;
 
 export type TypeToken = keyof typeof type;
 export const typeWeights = { regular: 400, medium: 500, bold: 700 } as const;
+
+/**
+ * §7b Font families. Poppins (OFL) at 400/500/700 only. `family` is the native
+ * face (the platform default is the fallback); `stack` is the web font-family
+ * value with the old system stack as fallback.
+ */
+export const fontFamilies = {
+  regular: {
+    family: 'Poppins_400Regular',
+    stack:
+      "Poppins_400Regular, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  },
+  medium: {
+    family: 'Poppins_500Medium',
+    stack:
+      "Poppins_500Medium, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  },
+  bold: {
+    family: 'Poppins_700Bold',
+    stack:
+      "Poppins_700Bold, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  },
+} as const;
+
+export type FontFamilyToken = keyof typeof fontFamilies;
+
+/** Maps a numeric weight (400/500/700) to its Poppins family token. */
+export function fontFamilyForWeight(weight: number): FontFamilyToken {
+  if (weight >= 700) return 'bold';
+  if (weight >= 500) return 'medium';
+  return 'regular';
+}
 
 /** §8 Spacing scale (4px base). */
 export const spacing = [

@@ -120,18 +120,24 @@ export function ProductCard({
       </Link>
 
       <View className="flex-row items-center justify-between pt-8">
-        <View className="flex-row items-baseline gap-8">
+        <View className="flex-1 flex-row items-baseline gap-8">
           {free ? (
             <Text variant="subhead" color="fg" weight="bold">
               Free
             </Text>
           ) : (
-            <Price amount={product.price} emphasis variant="subhead" />
+            <Price
+              amount={product.price}
+              emphasis
+              variant="subhead"
+              numberOfLines={1}
+            />
           )}
           {oldPrice != null ? (
             <Text
               variant="caption"
               color="fg-muted"
+              numberOfLines={1}
               style={{ textDecorationLine: 'line-through' }}
             >
               {formatNaira(oldPrice)}

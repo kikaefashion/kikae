@@ -59,7 +59,13 @@ export function Chip({
       )}
     >
       {icon ? <Icon name={icon} size={16} color={color} aria-hidden /> : null}
-      <Text variant="callout" color={color} maxFontSizeMultiplier={1.3}>
+      <Text
+        variant="callout"
+        color={color}
+        maxFontSizeMultiplier={1.3}
+        numberOfLines={1}
+        className="shrink"
+      >
         {label}
       </Text>
     </Pressable>

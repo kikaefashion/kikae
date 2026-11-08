@@ -155,27 +155,30 @@ too subtle to rely on. Keep the 1px `line` as the primary separator, or darken t
 
 ## 7. Type scale (one shared scale, Dynamic Type)
 
-System fonts only — iOS `SF Pro`, Android `Roboto`, web
-`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`. No bundled
-fonts. Weights restricted to **400 (Regular), 500 (Medium), 700 (Bold)** — Roboto has no 600.
+**Poppins** (SIL Open Font License) on iOS, Android and web. Three weights only — **400 (Regular),
+500 (Medium), 700 (Bold)** — to keep the web font data cost down (one file per weight). Each weight
+is its own family (`Poppins_400Regular`, `Poppins_500Medium`, `Poppins_700Bold`); web stacks fall
+back to `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`, and
+native falls back to the platform default face.
 
 | Token      | Size / line-height                    | Weight | iOS style   | Material 3 role |
 | ---------- | ------------------------------------- | ------ | ----------- | --------------- |
-| `display`  | 34 / 41                               | 700    | Large Title | Display Small   |
-| `title-1`  | 28 / 34                               | 700    | Title 1     | Headline Large  |
-| `title-2`  | 22 / 28                               | 500    | Title 2     | Title Large     |
-| `title-3`  | 20 / 25                               | 500    | Title 3     | Title Medium    |
-| `headline` | 17 / 22                               | 500    | Headline    | Title Small     |
-| `body`     | 17 / 22 (iOS) · 16 / 22 (Android/web) | 400    | Body        | Body Large      |
-| `callout`  | 15 / 20                               | 400    | Callout     | Body Medium     |
-| `subhead`  | 14 / 19                               | 500    | Subheadline | Body Small      |
-| `footnote` | 13 / 18                               | 400    | Footnote    | Label Medium    |
-| `caption`  | 12 / 16                               | 400    | Caption 1/2 | Label Small     |
+| `display`  | 34 / 44                               | 700    | Large Title | Display Small   |
+| `title-1`  | 28 / 36                               | 700    | Title 1     | Headline Large  |
+| `title-2`  | 22 / 30                               | 500    | Title 2     | Title Large     |
+| `title-3`  | 20 / 27                               | 500    | Title 3     | Title Medium    |
+| `headline` | 17 / 24                               | 500    | Headline    | Title Small     |
+| `body`     | 17 / 24 (iOS) · 16 / 24 (Android/web) | 400    | Body        | Body Large      |
+| `callout`  | 15 / 21                               | 400    | Callout     | Body Medium     |
+| `subhead`  | 14 / 20                               | 500    | Subheadline | Body Small      |
+| `footnote` | 13 / 19                               | 400    | Footnote    | Label Medium    |
+| `caption`  | 12 / 17                               | 400    | Caption 1/2 | Label Small     |
 
-`body` uses the platform default (17 iOS, 16 Android/web); all other sizes are shared. All sizes
-scale with Dynamic Type / font scaling, **up to 200% (2×)** — test at 135% and 200% and never
-hard-cap below 200%. Emphasis is achieved with size + weight only (see Hierarchy without color in
-`design-principles.md`), never color.
+`body` uses the platform default (17 iOS, 16 Android/web); all other sizes are shared. Line-heights
+are raised vs the old system-font scale to fit Poppins' taller ascender/descender metrics (no
+clipping at 200%). All sizes scale with Dynamic Type / font scaling, **up to 200% (2×)** — test at
+135% and 200% and never hard-cap below 200%. Emphasis is achieved with size + weight only (see
+Hierarchy without color in `design-principles.md`), never color.
 
 ## 8. Spacing scale (4px base)
 

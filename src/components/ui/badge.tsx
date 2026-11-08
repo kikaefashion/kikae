@@ -27,7 +27,7 @@ export function Badge({ count, max = 99, status, label, icon }: BadgeProps) {
           <Icon name={icon} size={16} color={status} aria-hidden />
         ) : null}
         {label ? (
-          <Text variant="caption" color={status}>
+          <Text variant="caption" color={status} numberOfLines={1}>
             {label}
           </Text>
         ) : null}
