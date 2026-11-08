@@ -1,7 +1,13 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import {
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_700Bold,
+} from '@expo-google-fonts/poppins';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { FontDisplay, useFonts, type FontSource } from 'expo-font';
+import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { createQueryClient } from '@/api/query-client';
@@ -9,21 +15,37 @@ import { ToastProvider } from '@/components/ui/toast';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { restoreSession } from '@/session/session-store';
 
+/** Poppins 400/500/700 only — `display: swap` avoids invisible text on web. */
+const POPPINS_FONTS: Record<string, FontSource> = {
+  Poppins_400Regular: { uri: Poppins_400Regular, display: FontDisplay.SWAP },
+  Poppins_500Medium: { uri: Poppins_500Medium, display: FontDisplay.SWAP },
+  Poppins_700Bold: { uri: Poppins_700Bold, display: FontDisplay.SWAP },
+};
+
 /**
  * App-wide providers: SafeArea, React Query, and the navigation color scheme
- * (defaulting to the system scheme). Hydrates the session at startup; the root
- * layout holds the splash screen until hydration resolves. No visible UI.
+ * (defaulting to the system scheme). Loads Poppins and hydrates the session at
+ * startup; the root layout holds the splash screen until both are ready (fonts
+ * fall back to the system stack if they fail). No visible UI.
  */
 export function AppProviders({ children }: { children: ReactNode }) {
   const queryClient = useMemo(() => createQueryClient(), []);
   const colorScheme = useColorScheme();
   const scheme = colorScheme === 'dark' ? 'dark' : 'light';
+  const [fontsLoaded, fontError] = useFonts(POPPINS_FONTS);
+  const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
-    void restoreSession().finally(() => {
-      void SplashScreen.hideAsync();
-    });
+    void restoreSession().finally(() => setSessionReady(true));
   }, []);
+
+  const fontsReady = fontsLoaded || fontError !== null;
+
+  useEffect(() => {
+    if (sessionReady && fontsReady) {
+      void SplashScreen.hideAsync();
+    }
+  }, [sessionReady, fontsReady]);
 
   return (
     <SafeAreaProvider>
