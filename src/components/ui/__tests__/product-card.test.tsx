@@ -59,6 +59,13 @@ describe('ProductCard', () => {
     expect(screen.getByText('5')).toBeOnTheScreen();
   });
 
+  it('renders a large formatted naira price', async () => {
+    await render(
+      <ProductCard product={{ ...product, price: 1250000, oldPrice: null }} />,
+    );
+    expect(screen.getByText('₦1,250,000')).toBeOnTheScreen();
+  });
+
   it('hides the rating when there are no ratings', async () => {
     await render(<ProductCard product={{ ...product, ratings: [] }} />);
     expect(screen.queryByText('5')).toBeNull();
