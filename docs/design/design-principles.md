@@ -12,8 +12,9 @@ values (colors, type ramp, spacing, radii, motion) live in `tokens.md`; layout r
 - **Semantic color is an accessory, never the message.** Success, warning, error, and info are
   muted and always paired with an icon **and** a text label — never communicated by color alone.
 - **No gradients, no decorative color.** Emphasis comes from imagery, type, spacing, and borders.
-- **System fonts only** — SF Pro (iOS), Roboto (Android), the system stack on web. No bundled or
-  loaded font files. All type scales with Dynamic Type / font scaling.
+- **Poppins everywhere** — Poppins (SIL OFL) on iOS, Android and web, at 400/500/700 only. Web uses
+  a system fallback stack; native falls back to the platform default. All type scales with Dynamic
+  Type / font scaling.
 - **Plain, friendly, direct English**, structured for later localization. Nigerian context:
   `₦` prices, `+234` phone inputs, forgiving addresses (state, LGA, landmark, informal).
 
@@ -126,7 +127,7 @@ values (colors, type ramp, spacing, radii, motion) live in `tokens.md`; layout r
 
 ## 15. What to avoid
 
-- No gradients, no decorative color, no color-only status, no bundled/custom fonts.
+- No gradients, no decorative color, no color-only status.
 - No spinners where a skeleton fits; no blank screens without a loading/error/empty/offline state.
 - No invented trust badges, payment methods, endpoints, or features not in `docs/inventory.md`
   (or the audit); no collections/stories beyond what the data supports.

@@ -42,9 +42,13 @@ Condensed source of truth. Read this instead of `tokens.md`, `design-principles.
 | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | spacing `0 2 4 8 12 16 20 24 32 40 48 56 64 80 96`                                    | `p-*` / `m-*` / `gap-*` (1:1 px)                                              |
 | radii `xs4 sm8 md12 lg16 xl24 2xl32 full9999`                                         | `rounded-*`; buttons always `rounded-full`                                    |
-| type `display title-1 title-2 title-3 headline body callout subhead footnote caption` | `text-{variant}` (size + line-height + weight)                                |
-| weight `regular400 medium500 bold700`                                                 | `font-*`                                                                      |
+| type `display title-1 title-2 title-3 headline body callout subhead footnote caption` | `text-{variant}` (size + line-height)                                         |
+| family `regular400 medium500 bold700` (Poppins + fallback stack)                      | `font-*`                                                                      |
 | motion `fast120 base200 slow300`                                                      | `duration-fast` / `duration-base` / `duration-slow` + `ease`; `reduced` = 0ms |
+
+Typeface: **Poppins** (SIL OFL) at 400/500/700 only — three weights keep the web font data cost
+down. `font-regular` / `font-medium` / `font-bold` map to the Poppins family + system fallback
+stack; the `Text` component resolves the family from its weight variant (no `fontWeight` classes).
 
 ## Hard rules
 
