@@ -1,4 +1,13 @@
-import { cssVarName, gray, iconSizes, radii, spacing, type } from '../tokens';
+import {
+  cssVarName,
+  fontFamilies,
+  fontFamilyForWeight,
+  gray,
+  iconSizes,
+  radii,
+  spacing,
+  type,
+} from '../tokens';
 
 describe('design tokens', () => {
   it('maps token keys to --kikae-* CSS variable names', () => {
@@ -40,5 +49,17 @@ describe('design tokens', () => {
       expect(spec.lineHeight).toBeGreaterThan(0);
       expect([400, 500, 700]).toContain(spec.weight);
     }
+  });
+
+  it('maps weights to their Poppins family', () => {
+    expect(fontFamilyForWeight(400)).toBe('regular');
+    expect(fontFamilyForWeight(500)).toBe('medium');
+    expect(fontFamilyForWeight(700)).toBe('bold');
+
+    expect(fontFamilies.regular.family).toBe('Poppins_400Regular');
+    expect(fontFamilies.medium.family).toBe('Poppins_500Medium');
+    expect(fontFamilies.bold.family).toBe('Poppins_700Bold');
+    expect(fontFamilies.bold.stack).toContain('Poppins_700Bold');
+    expect(fontFamilies.bold.stack).toContain('-apple-system');
   });
 });
