@@ -1,8 +1,6 @@
-import {
-  Poppins_400Regular,
-  Poppins_500Medium,
-  Poppins_700Bold,
-} from '@expo-google-fonts/poppins';
+import { Poppins_400Regular } from '@expo-google-fonts/poppins/400Regular';
+import { Poppins_500Medium } from '@expo-google-fonts/poppins/500Medium';
+import { Poppins_700Bold } from '@expo-google-fonts/poppins/700Bold';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { FontDisplay, useFonts, type FontSource } from 'expo-font';
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
