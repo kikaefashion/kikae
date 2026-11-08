@@ -1,11 +1,9 @@
 import { Link, type Href } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
-import { clsx } from 'tailwind-variants';
 
-import { focusRing } from '@/components/ui/constants';
-import { IconButton } from '@/components/ui/icon-button';
 import { Icon } from '@/components/ui/icon';
+import { IconButton } from '@/components/ui/icon-button';
 import { Image } from '@/components/ui/image';
 import { Price } from '@/components/ui/price';
 import { Text } from '@/components/ui/text';
@@ -91,7 +89,6 @@ export function ProductCard({
         <Pressable
           accessibilityRole="link"
           accessibilityLabel={`${product.name}, ${priceLabel}`}
-          className={clsx('rounded-lg', focusRing)}
         >
           <View className="relative">
             <Image
