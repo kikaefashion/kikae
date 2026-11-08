@@ -1,12 +1,12 @@
-import { ScreenLayout } from '@/components/navigation/screen-layout';
-import { Text } from '@/components/ui/text';
+import { DocumentTitle } from '@/components/document-title';
+import { PAGE_TITLES } from '@/config/titles';
+import { HomeScreen } from '@/features/home/home-screen';
 
-export default function HomeScreen() {
+export default function HomeRoute() {
   return (
-    <ScreenLayout>
-      <Text variant="title-1" color="fg" accessibilityRole="header">
-        Home
-      </Text>
-    </ScreenLayout>
+    <>
+      <DocumentTitle title={PAGE_TITLES.home} />
+      <HomeScreen />
+    </>
   );
 }
