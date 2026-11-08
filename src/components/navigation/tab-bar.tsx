@@ -67,6 +67,7 @@ export const TabItem = forwardRef<ElementRef<typeof Pressable>, TabItemProps>(
           variant="caption"
           color={isFocused ? 'fg' : 'fg-muted'}
           maxFontSizeMultiplier={1.3}
+          numberOfLines={1}
         >
           {label}
         </Text>
