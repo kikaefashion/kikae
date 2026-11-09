@@ -271,6 +271,15 @@ export const getProductEmpty = http.get(`${API_URL}/getProduct/:id`, () =>
   HttpResponse.json({ status: true, message: 'ok', data: null }),
 );
 
+export const getProductServerError = http.get(`${API_URL}/getProduct/:id`, () =>
+  HttpResponse.json({ message: 'Server error' }, { status: 500 }),
+);
+
+export const getProductLoading = http.get(`${API_URL}/getProduct/:id`, () => {
+  // Never resolves — keeps the query in the loading state.
+  return new Promise(() => {});
+});
+
 export const trackProductViewSuccess = http.post(
   `${API_URL}/products/:id/views`,
   () => HttpResponse.json({ status: true, message: 'View added', views: 4 }),

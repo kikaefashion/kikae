@@ -246,7 +246,7 @@ export function ProductScreen() {
           );
           return;
         }
-        like.mutate(product.id);
+        like.mutate(id ?? '');
       }}
     />
   ) : null;
