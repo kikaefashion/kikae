@@ -159,22 +159,24 @@ function ProductContent({
         <ExpandableDescription text={product.description} />
       ) : null}
 
-      <Link href={`/store/${product.store.id}` as Href} asChild>
-        <Pressable
-          accessibilityRole="link"
-          className="flex-row items-center gap-12 self-start"
-        >
-          <Image
-            source={mediaUrl(product.store.logo)}
-            alt={product.store.name}
-            contentFit="cover"
-            className="h-40 w-40 rounded-full"
-          />
-          <Text variant="subhead" color="fg">
-            {product.store.name}
-          </Text>
-        </Pressable>
-      </Link>
+      {product.store ? (
+        <Link href={`/store/${product.store.id}` as Href} asChild>
+          <Pressable
+            accessibilityRole="link"
+            className="flex-row items-center gap-12 self-start"
+          >
+            <Image
+              source={mediaUrl(product.store.logo)}
+              alt={product.store.name}
+              contentFit="cover"
+              className="h-40 w-40 rounded-full"
+            />
+            <Text variant="subhead" color="fg">
+              {product.store.name}
+            </Text>
+          </Pressable>
+        </Link>
+      ) : null}
 
       {rating != null ? (
         <View className="flex-row items-center gap-4">

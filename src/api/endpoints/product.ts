@@ -17,6 +17,14 @@ const LikeSchema = z.object({
   like: z.union([z.boolean(), z.number()]),
 });
 
+/** Coerces a missing or `null` list to `[]` — the backend nulls empty relations. */
+function list<T extends z.ZodTypeAny>(item: T): z.ZodType<z.infer<T>[]> {
+  return z
+    .array(item)
+    .nullish()
+    .transform((value) => value ?? []);
+}
+
 export const ProductDetailSchema = z.object({
   id,
   name: z.string(),
@@ -26,34 +34,20 @@ export const ProductDetailSchema = z.object({
   units: z.coerce.number().int().nonnegative(),
   thrift: bool.nullable(),
   description: z.string().nullable().optional().default(''),
-  media: z
-    .array(z.object({ url: z.string().nullable() }))
+  media: list(z.object({ url: z.string().nullable() })),
+  sizes: list(z.object({ size: z.string() })),
+  colours: list(z.object({ name: z.string() })),
+  ratings: list(z.object({ rating: z.coerce.number() })),
+  store: z
+    .object({ id, name: z.string(), logo: z.string().nullable() })
+    .nullable()
     .optional()
-    .default([]),
-  sizes: z
-    .array(z.object({ size: z.string() }))
-    .optional()
-    .default([]),
-  colours: z
-    .array(z.object({ name: z.string() }))
-    .optional()
-    .default([]),
-  ratings: z
-    .array(z.object({ rating: z.coerce.number() }))
-    .optional()
-    .default([]),
-  store: z.object({ id, name: z.string(), logo: z.string().nullable() }),
-  likes: z.array(LikeSchema).optional().default([]),
+    .default(null),
+  likes: list(LikeSchema),
   isMakeup: bool.optional().default(false),
   offer: z.string().nullable().optional(),
-  coverages: z
-    .array(z.object({ area: z.string(), fee: money }))
-    .optional()
-    .default([]),
-  availability: z
-    .array(z.object({ dated: z.string(), available: bool }))
-    .optional()
-    .default([]),
+  coverages: list(z.object({ area: z.string(), fee: money })),
+  availability: list(z.object({ dated: z.string(), available: bool })),
 });
 
 export type ProductDetail = z.infer<typeof ProductDetailSchema>;
@@ -96,6 +90,14 @@ export async function fetchProduct(
 
   const parsed = ProductDetailSchema.safeParse(data);
   if (!parsed.success) {
+    if (__DEV__) {
+      const fields = parsed.error.issues
+        .map((issue) => issue.path.join('.') || '(root)')
+        .join(', ');
+      console.warn(
+        `Product ${productId}: schema mismatch on field(s): ${fields}`,
+      );
+    }
     throw new ApiError(
       'parse',
       'Response data did not match the expected shape',

@@ -81,6 +81,36 @@ describe('ProductDetailSchema', () => {
       expect(json).not.toContain(key);
     }
   });
+
+  it('tolerates null relations and a missing store', () => {
+    const parsed = ProductDetailSchema.parse({
+      id: 1,
+      name: 'X',
+      price: 100,
+      old_price: null,
+      status: 'approved',
+      units: 1,
+      thrift: null,
+      description: null,
+      media: null,
+      sizes: null,
+      colours: null,
+      ratings: null,
+      likes: null,
+      store: null,
+      coverages: null,
+      availability: null,
+    });
+
+    expect(parsed.media).toEqual([]);
+    expect(parsed.sizes).toEqual([]);
+    expect(parsed.colours).toEqual([]);
+    expect(parsed.ratings).toEqual([]);
+    expect(parsed.likes).toEqual([]);
+    expect(parsed.coverages).toEqual([]);
+    expect(parsed.availability).toEqual([]);
+    expect(parsed.store).toBeNull();
+  });
 });
 
 describe('fetchProduct', () => {
