@@ -1,8 +1,5 @@
-import { useLocalSearchParams } from 'expo-router';
+import { ProductScreen } from '@/features/product/product-screen';
 
-import { ComingSoonScreen } from '@/components/navigation/screen-layout';
-
-export default function ProductScreen() {
-  const { id } = useLocalSearchParams<{ id?: string }>();
-  return <ComingSoonScreen title={id ? `Product ${id}` : 'Product'} />;
+export default function ProductRoute() {
+  return <ProductScreen />;
 }
