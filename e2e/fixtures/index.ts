@@ -147,6 +147,48 @@ const BannerEnvelopeSchema = z.object({
   data: z.array(BannerSchema),
 });
 
+const ProductDetailSchema = z.object({
+  id: z.union([z.number().int(), z.string()]),
+  old_price: z.number().nullable(),
+  price: z.number(),
+  name: z.string(),
+  status: z.string(),
+  description: z.string().nullable().optional(),
+  units: z.number().int(),
+  thrift: z.boolean().nullable(),
+  media: z.array(z.object({ url: z.string().nullable() })),
+  sizes: z.array(z.object({ size: z.string() })),
+  colours: z.array(z.object({ name: z.string() })),
+  ratings: z.array(z.object({ rating: z.number() })),
+  store: z.object({
+    id: z.union([z.number().int(), z.string()]),
+    name: z.string(),
+    logo: z.string().nullable(),
+  }),
+  likes: z.array(
+    z.object({
+      user_id: z.union([z.number().int(), z.string()]),
+      like: z.union([z.boolean(), z.number()]),
+    }),
+  ),
+  isMakeup: z.union([z.boolean(), z.number(), z.null()]).optional(),
+  coverages: z.array(
+    z.object({ area: z.string(), fee: z.union([z.number(), z.string()]) }),
+  ),
+  availability: z.array(
+    z.object({
+      dated: z.string(),
+      available: z.union([z.boolean(), z.number()]),
+    }),
+  ),
+});
+
+const ProductEnvelopeSchema = z.object({
+  status: z.boolean(),
+  message: z.string(),
+  data: ProductDetailSchema,
+});
+
 function load<T>(filename: string, schema: z.ZodType<T>): T {
   const raw = readFileSync(join(FIXTURES_DIR, filename), 'utf8');
   return schema.parse(JSON.parse(raw));
@@ -159,6 +201,8 @@ export const currentUser = load('current-user.json', CurrentUserEnvelopeSchema);
 export const categories = load('categories.json', CategoriesEnvelopeSchema);
 export const home = load('home.json', HomeEnvelopeSchema);
 export const banners = load('banners.json', BannerEnvelopeSchema);
+export const product = load('product.json', ProductEnvelopeSchema);
 
 export type CurrentUser = z.infer<typeof CurrentUserSchema>;
 export type ProductCategory = z.infer<typeof ProductCategorySchema>;
+export type ProductDetail = z.infer<typeof ProductDetailSchema>;
