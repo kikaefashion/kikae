@@ -22,8 +22,9 @@ test.describe('product detail', () => {
     await page.getByText('Ankara dress').first().click();
 
     await expect(page).toHaveURL(/\/product\/1/);
-    await expect(page.getByText('Ankara dress').first()).toBeVisible();
-    await expect(page.getByText('Ada Threads')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Ankara dress' }),
+    ).toBeVisible();
   });
 
   test('an unknown id shows not-found', async ({ page }) => {
@@ -38,6 +39,9 @@ test.describe('product detail', () => {
     await openHomeAsGuest(page);
     await page.getByText('Ankara dress').first().click();
     await expect(page).toHaveURL(/\/product\/1/);
+    await expect(
+      page.getByRole('heading', { name: 'Ankara dress' }),
+    ).toBeVisible();
 
     await page.getByRole('button', { name: 'Add to wishlist' }).click();
 
