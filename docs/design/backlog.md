@@ -19,13 +19,15 @@ what would change. None of these are in scope for the first rebuild pass.
 
 ## Product detail
 
+- **Reviews screen** — a read-only review list fed by `/getReviews`.
+- **Comments screen** — a read-only threaded comment list fed by `/getProductComments`.
+- **Write a review** — the create-review form (rating + comment).
+- **Write a comment** — the add/reply comment form.
 - **Share** — re-add the share action (web `navigator.share` / native sheet) once a canonical
   product URL strategy is chosen.
 - **Related products** — render a "Suggested products" rail once an endpoint is decided.
 - **Report product** — a report flow once the trust/safety requirements are settled.
 - **Fullscreen image zoom** — pinch/zoom and a fullscreen lightbox (deferred from the gallery).
-- **Product views counter** — re-add view tracking with a correct effect (the old one never re-ran
-  on param change).
 - **Makeup booking** — a booking flow for `isMakeup` products (coverage + availability are read-only
   today).
 

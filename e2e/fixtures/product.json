@@ -1,0 +1,27 @@
+{
+  "status": true,
+  "message": "Successfully retrieved product.",
+  "data": {
+    "id": 1,
+    "old_price": 15000,
+    "price": 12000,
+    "name": "Ankara dress",
+    "status": "approved",
+    "description": "A hand-dyed ankara maxi dress, made in Lagos.",
+    "units": 5,
+    "thrift": true,
+    "media": [{ "url": "profile-pic/dress.webp" }],
+    "sizes": [{ "size": "S" }, { "size": "M" }],
+    "colours": [{ "name": "Red" }],
+    "ratings": [{ "rating": 5 }],
+    "store": {
+      "id": "store-1",
+      "name": "Ada Threads",
+      "logo": "profile-pic/logo.webp"
+    },
+    "likes": [],
+    "isMakeup": 0,
+    "coverages": [],
+    "availability": []
+  }
+}

@@ -1,6 +1,6 @@
 import type { HomeData, Product } from '@/api/endpoints/home';
 
-import { addLike, isProductLiked, toCardProduct } from '../selectors';
+import { addLike, isLikedBy, toCardProduct } from '../selectors';
 
 const product: Product = {
   id: 1,
@@ -17,26 +17,25 @@ const product: Product = {
   likes: [{ user_id: 7, like: 1 }],
 };
 
-describe('isProductLiked', () => {
+describe('isLikedBy', () => {
+  it('coerces the session id and like user_id to numbers in both directions', () => {
+    expect(isLikedBy([{ user_id: 264, like: 1 }], '264')).toBe(true);
+    expect(isLikedBy([{ user_id: '264', like: 1 }], 264)).toBe(true);
+  });
+
   it('is true when a like matches the user id with like 1 or true', () => {
-    expect(isProductLiked(product, 7)).toBe(true);
-    expect(
-      isProductLiked({ ...product, likes: [{ user_id: 7, like: true }] }, 7),
-    ).toBe(true);
+    expect(isLikedBy([{ user_id: 7, like: 1 }], 7)).toBe(true);
+    expect(isLikedBy([{ user_id: 7, like: true }], 7)).toBe(true);
   });
 
   it('is false for other users or a null user', () => {
-    expect(isProductLiked(product, 8)).toBe(false);
-    expect(isProductLiked(product, null)).toBe(false);
+    expect(isLikedBy([{ user_id: 8, like: 1 }], 7)).toBe(false);
+    expect(isLikedBy([{ user_id: 7, like: 1 }], null)).toBe(false);
   });
 
   it('is false when the like value is 0 or false', () => {
-    expect(
-      isProductLiked({ ...product, likes: [{ user_id: 7, like: 0 }] }, 7),
-    ).toBe(false);
-    expect(
-      isProductLiked({ ...product, likes: [{ user_id: 7, like: false }] }, 7),
-    ).toBe(false);
+    expect(isLikedBy([{ user_id: 7, like: 0 }], 7)).toBe(false);
+    expect(isLikedBy([{ user_id: 7, like: false }], 7)).toBe(false);
   });
 });
 
@@ -71,5 +70,19 @@ describe('addLike', () => {
     expect(updated.new_arrivals[0].likes).toHaveLength(2);
     expect(updated.thrift_products[0].likes).toHaveLength(2);
     expect(updated.featured_products[0].likes).toHaveLength(1);
+  });
+
+  it('matches a string product id against numeric product ids', () => {
+    const data: HomeData = {
+      new_arrivals: [product],
+      featured_products: [],
+      thrift_products: [],
+      freebies: [],
+      trending_categories: [],
+    };
+
+    const updated = addLike(data, '1', 7);
+
+    expect(updated.new_arrivals[0].likes).toHaveLength(2);
   });
 });

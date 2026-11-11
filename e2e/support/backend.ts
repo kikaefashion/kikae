@@ -8,6 +8,7 @@ import {
   loginInvalid,
   loginSuccess,
   loginUnverified,
+  product,
 } from '../fixtures';
 
 /**
@@ -107,7 +108,38 @@ export async function mockBackend(
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ status: true, message: 'ok', data: { liked: true } }),
+      body: JSON.stringify({
+        status: true,
+        message: 'ok',
+        data: { liked: true },
+      }),
+    });
+  });
+
+  // Product detail: id 1 is the known product; any other id is a 404.
+  await page.route(/\/getProduct\//, async (route) => {
+    const url = new URL(route.request().url());
+    const id = url.pathname.split('/').pop();
+    if (id === '1') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(product),
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 404,
+      contentType: 'application/json',
+      body: JSON.stringify({ message: 'Not found' }),
+    });
+  });
+
+  await page.route(/\/products\/\d+\/views/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ status: true, message: 'View added', views: 4 }),
     });
   });
 

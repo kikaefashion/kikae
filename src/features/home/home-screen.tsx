@@ -16,12 +16,12 @@ import { ProductCard } from '@/components/ui/product-card';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
-import { requireAuth } from '@/features/auth/require-auth';
+import { requireAuth, resolveHeartAction } from '@/features/auth/require-auth';
 import { useSessionStatus } from '@/session/session-store';
 import { useColumnCount } from '@/utils/layout';
 
 import { toCarouselSlide } from './banner-links';
-import { isProductLiked, toCardProduct } from './selectors';
+import { isLikedBy, toCardProduct } from './selectors';
 import { useLikeProduct } from './use-like-product';
 
 const RAIL_CARD_WIDTH = 160;
@@ -55,7 +55,7 @@ function ProductRail({
         renderItem={({ item }) => (
           <ProductCard
             product={toCardProduct(item)}
-            liked={isProductLiked(item, userId)}
+            liked={isLikedBy(item.likes, userId)}
             saving={savingId === item.id}
             onLikePress={() => onHeartPress(item)}
             width={RAIL_CARD_WIDTH}
@@ -94,11 +94,10 @@ function HomeSkeleton({ columns }: { columns: number }) {
   );
 }
 
-
 export function HomeScreen() {
   const columns = useColumnCount();
   const pathname = usePathname();
-  const signedIn = useSessionStatus() === 'signedIn';
+  const status = useSessionStatus();
   const userId = getUserId();
   const connectivity = useConnectivity();
   const offline = connectivity.isConnected === false;
@@ -147,11 +146,13 @@ export function HomeScreen() {
   const savingId = like.isPending ? like.variables : null;
 
   const onHeartPress = (product: Product) => {
-    if (signedIn) {
-      like.mutate(product.id);
+    const action = resolveHeartAction(status);
+    if (action === 'wait') return;
+    if (action === 'login') {
+      router.push(requireAuth('/' as Href, false, pathname));
       return;
     }
-    router.push(requireAuth('/' as Href, false, pathname));
+    like.mutate(product.id);
   };
 
   const openCategory = (category: Category) => {
@@ -184,7 +185,7 @@ export function HomeScreen() {
         renderItem={({ item }) => (
           <ProductCard
             product={toCardProduct(item)}
-            liked={isProductLiked(item, userId)}
+            liked={isLikedBy(item.likes, userId)}
             saving={savingId === item.id}
             onLikePress={() => onHeartPress(item)}
           />
