@@ -1,3 +1,5 @@
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import { fireEvent, render, screen } from '@/test-utils/render';
 
 import { ScreenHeader } from '../screen-header';
@@ -14,10 +16,32 @@ jest.mock('expo-router', () => ({
   useCanGoBack: () => mockCanGoBack,
 }));
 
+/** The header row is the grandparent of the labelled back button. */
+function getHeader() {
+  const header = screen.getByRole('button', { name: 'Back' }).parent?.parent;
+  if (!header) throw new Error('ScreenHeader container not found');
+  return header;
+}
+
 describe('ScreenHeader', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockCanGoBack = false;
+  });
+
+  it('offsets itself below the top safe-area inset', async () => {
+    await render(
+      <SafeAreaProvider
+        initialMetrics={{
+          frame: { x: 0, y: 0, width: 320, height: 640 },
+          insets: { top: 47, left: 0, right: 0, bottom: 0 },
+        }}
+      >
+        <ScreenHeader title="Product" />
+      </SafeAreaProvider>,
+    );
+
+    expect(getHeader()).toHaveStyle({ paddingTop: 55 });
   });
 
   it('renders the back button and an optional title', async () => {

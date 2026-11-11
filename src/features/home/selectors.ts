@@ -2,15 +2,22 @@ import type { HomeData, Product } from '@/api/endpoints/home';
 import type { ProductCardProduct } from '@/components/ui/product-card';
 import { mediaUrl } from '@/utils/media-url';
 
+/** A single like entry, shared by the home and product endpoints. */
+export interface ProductLike {
+  user_id: string | number;
+  like: boolean | number;
+}
+
 /** Liked state is derived from `likes[]`, never stored separately. */
-export function isProductLiked(
-  product: Product,
+export function isLikedBy(
+  likes: readonly ProductLike[],
   userId: string | number | null,
 ): boolean {
   if (userId == null) return false;
-  return product.likes.some(
+  return likes.some(
     (like) =>
-      like.user_id === userId && (like.like === 1 || like.like === true),
+      Number(like.user_id) === Number(userId) &&
+      (like.like === 1 || like.like === true),
   );
 }
 
@@ -40,7 +47,7 @@ export function addLike(
 ): HomeData {
   const addToProducts = (products: Product[]) =>
     products.map((product) =>
-      product.id === productId
+      Number(product.id) === Number(productId)
         ? {
             ...product,
             likes: [...product.likes, { user_id: userId, like: 1 }],

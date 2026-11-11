@@ -27,13 +27,14 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TagList } from '@/components/ui/tag-list';
 import { Text } from '@/components/ui/text';
-import { requireAuth } from '@/features/auth/require-auth';
+import { requireAuth, resolveHeartAction } from '@/features/auth/require-auth';
 import { useSessionStatus } from '@/session/session-store';
 import { formatNaira } from '@/utils/format-naira';
 import { mediaUrl } from '@/utils/media-url';
 
-import { averageRating, isProductLiked, stockLabel } from './selectors';
-import { useLikeProduct } from './use-like-product';
+import { isLikedBy } from '@/features/home/selectors';
+import { useLikeProduct } from '@/features/home/use-like-product';
+import { averageRating, stockLabel } from './selectors';
 
 function ProductSkeleton() {
   return (
@@ -221,7 +222,7 @@ function ProductContent({
 export function ProductScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const pathname = usePathname();
-  const signedIn = useSessionStatus() === 'signedIn';
+  const status = useSessionStatus();
   const userId = getUserId();
   const { isConnected } = useConnectivity();
   const query = useProduct(id ?? '');
@@ -234,7 +235,7 @@ export function ProductScreen() {
   }, [id]);
 
   const like = useLikeProduct(userId);
-  const liked = product ? isProductLiked(product, userId) : false;
+  const liked = product ? isLikedBy(product.likes, userId) : false;
 
   const heart = product ? (
     <IconButton
@@ -242,7 +243,9 @@ export function ProductScreen() {
       label={liked ? 'Saved' : 'Add to wishlist'}
       disabled={liked || like.isPending}
       onPress={() => {
-        if (!signedIn) {
+        const action = resolveHeartAction(status);
+        if (action === 'wait') return;
+        if (action === 'login') {
           router.push(
             requireAuth(`/product/${product.id}` as Href, false, pathname),
           );

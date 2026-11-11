@@ -4,16 +4,19 @@ import {
   useNetInfo,
   type NetInfoState,
 } from '@react-native-community/netinfo';
+import { http, HttpResponse } from 'msw';
 import { View } from 'react-native';
 
 import { clearSession, setSession } from '@/api/identity';
 import {
+  API_URL,
   getProductLoading,
   getProductNonApproved,
   getProductNotFound,
   getProductServerError,
   getProductSuccess,
   likeProductSuccess,
+  productDetail,
   trackProductViewSuccess,
 } from '@/test-utils/msw/handlers';
 import { server } from '@/test-utils/msw/server';
@@ -152,6 +155,44 @@ describe('ProductScreen', () => {
     expect(requestedUrls.some((url) => url.includes('/likeProduct'))).toBe(
       false,
     );
+    expect(
+      screen.queryByText("Couldn't save to wishlist. Try again."),
+    ).toBeNull();
+  });
+
+  it('renders the heart as Saved when the session id and like user_id differ in type', async () => {
+    setSession({ token: 't', userId: 264 });
+    server.use(
+      http.get(`${API_URL}/getProduct/:id`, () =>
+        HttpResponse.json({
+          status: true,
+          message: 'ok',
+          data: { ...productDetail, likes: [{ user_id: '264', like: 1 }] },
+        }),
+      ),
+      trackProductViewSuccess,
+    );
+    await render(<ProductScreen />);
+    await screen.findByText('Test Makeup');
+
+    expect(screen.getByRole('button', { name: 'Saved' })).toBeOnTheScreen();
+  });
+
+  it('shows Saved before the like request resolves', async () => {
+    setSession({ token: 't', userId: 7 });
+    server.use(
+      getProductSuccess,
+      trackProductViewSuccess,
+      http.post(`${API_URL}/likeProduct`, () => new Promise(() => {})),
+    );
+    await render(<ProductScreen />);
+    await screen.findByText('Test Makeup');
+
+    fireEvent.press(screen.getByRole('button', { name: 'Add to wishlist' }));
+
+    expect(
+      await screen.findByRole('button', { name: 'Saved' }),
+    ).toBeOnTheScreen();
   });
 
   it('saves the heart for a signed-in user', async () => {
