@@ -4,6 +4,7 @@ import type { ProductCategory } from '@/api/endpoints/categories';
 import type { CurrentUser } from '@/api/endpoints/current-user';
 import type { Banner } from '@/api/endpoints/banners';
 import type { Category, HomeData, Product } from '@/api/endpoints/home';
+import type { ProductDetail } from '@/api/endpoints/product';
 
 /** Matches the test env in `jest.setup.ts` (`EXPO_PUBLIC_API_URL`). */
 export const API_URL = 'https://api.test';
@@ -136,7 +137,11 @@ function makeHomeProduct(overrides: Partial<Product> = {}): Product {
     thrift: false,
     made_in_nigeria: true,
     ratings: [{ rating: 4 }, { rating: 5 }],
-    store: { id: 'store-1', name: 'Ada Threads', logo: 'profile-pic/logo.webp' },
+    store: {
+      id: 'store-1',
+      name: 'Ada Threads',
+      logo: 'profile-pic/logo.webp',
+    },
     media: [{ url: 'profile-pic/dress.webp' }],
     likes: [],
     ...overrides,
@@ -215,6 +220,74 @@ export const likeProductSuccess = http.post(`${API_URL}/likeProduct`, () =>
 
 export const likeProductFailure = http.post(`${API_URL}/likeProduct`, () =>
   HttpResponse.json({ status: false, message: 'failed' }),
+);
+
+/** Sanitized product-detail fixture (private store fields are never declared). */
+export const productDetail: ProductDetail = {
+  id: 248,
+  name: 'Test Makeup',
+  price: 15000,
+  old_price: null,
+  status: 'approved',
+  units: 1,
+  thrift: null,
+  description: 'nothing special',
+  media: [{ url: 'profile-pic/4wVdoWCrqS2PmgGlZoie9Xp7F16imsbirYhVuZgf.webp' }],
+  sizes: [{ size: 'S' }, { size: 'M' }],
+  colours: [{ name: 'Red' }],
+  ratings: [{ rating: 5 }],
+  store: {
+    id: 'a11501f1-a498-43d0-8113-3bb43cf7ae4b',
+    name: 'Dexha Fashion',
+    logo: 'profile-pic/HbOWcM4L28t87NKJddbduuUUHCUOQqfTQZo7ivp4.webp',
+  },
+  likes: [],
+  isMakeup: true,
+  offer: 'home',
+  coverages: [{ area: 'Ugbowo', fee: 5000 }],
+  availability: [{ dated: 'Sunday,06:00 - 18:00', available: true }],
+};
+
+const productEnvelope = (data: unknown) =>
+  HttpResponse.json({ status: true, message: 'ok', data });
+
+export const getProductSuccess = http.get(`${API_URL}/getProduct/:id`, () =>
+  productEnvelope(productDetail),
+);
+
+export const getProductNonApproved = http.get(`${API_URL}/getProduct/:id`, () =>
+  productEnvelope({ ...productDetail, status: 'rejected' }),
+);
+
+export const getProductNotFound = http.get(`${API_URL}/getProduct/:id`, () =>
+  HttpResponse.json({ message: 'Not found' }, { status: 404 }),
+);
+
+export const getProductStatusFalse = http.get(`${API_URL}/getProduct/:id`, () =>
+  HttpResponse.json({ status: false, message: 'failed' }),
+);
+
+export const getProductEmpty = http.get(`${API_URL}/getProduct/:id`, () =>
+  HttpResponse.json({ status: true, message: 'ok', data: null }),
+);
+
+export const getProductServerError = http.get(`${API_URL}/getProduct/:id`, () =>
+  HttpResponse.json({ message: 'Server error' }, { status: 500 }),
+);
+
+export const getProductLoading = http.get(`${API_URL}/getProduct/:id`, () => {
+  // Never resolves — keeps the query in the loading state.
+  return new Promise(() => {});
+});
+
+export const trackProductViewSuccess = http.post(
+  `${API_URL}/products/:id/views`,
+  () => HttpResponse.json({ status: true, message: 'View added', views: 4 }),
+);
+
+export const trackProductViewServerError = http.post(
+  `${API_URL}/products/:id/views`,
+  () => HttpResponse.json({ message: 'Server error' }, { status: 500 }),
 );
 
 /** Deliberately out of order — the carousel sorts by `position`. */

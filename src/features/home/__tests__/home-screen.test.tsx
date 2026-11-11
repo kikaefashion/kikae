@@ -17,6 +17,7 @@ import {
   getHomeOnlyNewArrivals,
   getHomeServerError,
   homeData,
+  homeProducts,
   likeProductFailure,
   likeProductSuccess,
 } from '@/test-utils/msw/handlers';
@@ -91,9 +92,9 @@ jest.mock('expo-router', () => ({
   Link: ({ children }: { children: ReactNode }) => children,
 }));
 
-jest.spyOn(AccessibilityInfo, 'announceForAccessibility').mockReturnValue(
-  undefined,
-);
+jest
+  .spyOn(AccessibilityInfo, 'announceForAccessibility')
+  .mockReturnValue(undefined);
 
 const online: NetInfoState = {
   type: NetInfoStateType.other,
@@ -138,7 +139,11 @@ describe('HomeScreen', () => {
     server.use(
       http.get(`${API_URL}/customer/v2/home`, async () => {
         await delay(50);
-        return HttpResponse.json({ status: true, message: 'ok', data: homeData });
+        return HttpResponse.json({
+          status: true,
+          message: 'ok',
+          data: homeData,
+        });
       }),
     );
     await render(<HomeScreen />);
@@ -229,6 +234,53 @@ describe('HomeScreen', () => {
     expect(requestedUrls.some((url) => url.includes('/likeProduct'))).toBe(
       false,
     );
+    expect(
+      screen.queryByText("Couldn't save to wishlist. Try again."),
+    ).toBeNull();
+  });
+
+  it('renders the heart as Saved when the session id and like user_id differ in type', async () => {
+    setSession({ token: 't', userId: '264' });
+    server.use(
+      http.get(`${API_URL}/customer/v2/home`, () =>
+        HttpResponse.json({
+          status: true,
+          message: 'ok',
+          data: {
+            ...homeData,
+            new_arrivals: [
+              { ...homeProducts[0], likes: [{ user_id: 264, like: 1 }] },
+            ],
+            featured_products: [],
+            thrift_products: [],
+            freebies: [],
+          },
+        }),
+      ),
+    );
+    await render(<HomeScreen />);
+    await screen.findAllByText('Ankara dress');
+
+    expect(screen.getAllByRole('button', { name: 'Saved' })).not.toHaveLength(
+      0,
+    );
+  });
+
+  it('shows Saved before the like request resolves', async () => {
+    setSession({ token: 't', userId: 7 });
+    server.use(
+      http.post(`${API_URL}/likeProduct`, () => new Promise(() => {})),
+    );
+    await render(<HomeScreen />);
+    await screen.findAllByText('Ankara dress');
+
+    await fireEvent.press(
+      screen.getAllByRole('button', { name: 'Add to wishlist' })[0],
+    );
+
+    expect(
+      await screen.findAllByRole('button', { name: 'Saved' }),
+    ).not.toHaveLength(0);
   });
 
   it('optimistically saves the heart for a signed-in user', async () => {

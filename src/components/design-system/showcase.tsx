@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Chip } from '@/components/ui/chip';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
+import { Gallery } from '@/components/ui/gallery';
 import { IconButton } from '@/components/ui/icon-button';
 import { Image } from '@/components/ui/image';
 import { InlineBanner } from '@/components/ui/inline-banner';
@@ -24,8 +25,10 @@ import {
 } from '@/components/ui/product-card';
 import { Radio } from '@/components/ui/radio';
 import { SectionHeader } from '@/components/ui/section-header';
+import { ScreenHeader } from '@/components/ui/screen-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
+import { TagList } from '@/components/ui/tag-list';
 import { Text, type TextVariant } from '@/components/ui/text';
 import { ToastProvider, useToast } from '@/components/ui/toast';
 import { roles, type as typeScale } from '@/theme/tokens';
@@ -384,6 +387,27 @@ export default function DesignSystemContent() {
                 actionLabel="See all"
                 onActionPress={() => {}}
               />
+            </View>
+          </Section>
+
+          <Section title="ScreenHeader">
+            <ScreenHeader title="Product detail" />
+          </Section>
+
+          <Section title="Gallery">
+            <Gallery
+              images={[
+                { url: 'profile-pic/x.webp' },
+                { url: 'profile-pic/y.webp' },
+              ]}
+              alt="Sample product"
+            />
+          </Section>
+
+          <Section title="TagList">
+            <View className="gap-12">
+              <TagList label="Available in sizes" values={['S', 'M', 'L']} />
+              <TagList label="Available in colours" values={['Red', 'Black']} />
             </View>
           </Section>
 

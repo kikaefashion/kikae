@@ -19,7 +19,7 @@ async function openHomeAsGuest(page: Page): Promise<void> {
 }
 
 test.describe('home', () => {
-  test('home loads and a card tap goes to the product stub', async ({
+  test('home loads and a card tap opens the product detail', async ({
     page,
   }) => {
     await openHomeAsGuest(page);
@@ -27,7 +27,9 @@ test.describe('home', () => {
     await page.getByText('Ankara dress').first().click();
 
     await expect(page).toHaveURL(/\/product\/1/);
-    await expect(page.getByText('Coming soon')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Ankara dress' }),
+    ).toBeVisible();
   });
 
   test('a guest tapping the heart reaches /login', async ({ page }) => {

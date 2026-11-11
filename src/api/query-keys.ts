@@ -4,4 +4,5 @@ export const queryKeys = {
   categories: ['categories'] as const,
   home: ['home'] as const,
   banners: ['banners'] as const,
+  product: (id: string | number) => ['product', id] as const,
 };
