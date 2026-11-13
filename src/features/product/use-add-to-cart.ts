@@ -2,13 +2,14 @@ import { router } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { addToCart, updateCart, type CartLine } from '@/api/endpoints/cart';
+import type { ProductDetail } from '@/api/endpoints/product';
 import { queryKeys } from '@/api/query-keys';
 import { useToast } from '@/components/ui/toast';
 
 import { planAddToCart } from './selectors';
 
 export interface AddToCartVariables {
-  product: { id: string | number; units: number };
+  product: ProductDetail;
   sizeId: string | number;
   colorId: string | number;
   units: number;
@@ -16,6 +17,7 @@ export interface AddToCartVariables {
 
 type AddToCartResult =
   | { status: 'full' }
+  | { status: 'refused' }
   | { status: 'added'; settle: 'update'; line: CartLine }
   | { status: 'added'; settle: 'refetch' };
 
@@ -24,8 +26,8 @@ type AddToCartResult =
  * through `updateCart` and clamps the quantity to stock (counting the SUM of
  * units across all lines of that product). `updateCart` settles the `['cart']`
  * cache from its response; a fresh line invalidates it (no line in the
- * `addToCart` response). Refuses nothing here — the screen never calls this for
- * makeup or freebies, and `planAddToCart` treats an exhausted product as `full`.
+ * `addToCart` response). Refuses makeup and freebies here too (defense in
+ * depth) — the screen never offers Add to cart for those products.
  */
 export function useAddToCart() {
   const queryClient = useQueryClient();
@@ -38,6 +40,8 @@ export function useAddToCart() {
       colorId,
       units,
     }: AddToCartVariables): Promise<AddToCartResult> => {
+      if (product.isMakeup || product.price === 0) return { status: 'refused' };
+
       const cart = queryClient.getQueryData<CartLine[]>(queryKeys.cart) ?? [];
       const plan = planAddToCart(cart, product, sizeId, colorId, units);
       if (plan.kind === 'full') return { status: 'full' };
@@ -60,6 +64,8 @@ export function useAddToCart() {
         toast.warning('No more of this item is available');
         return;
       }
+      if (result.status === 'refused') return;
+
       if (result.settle === 'update') {
         queryClient.setQueryData<CartLine[]>(queryKeys.cart, (current) =>
           (current ?? []).map((line) =>
