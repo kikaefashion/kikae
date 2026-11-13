@@ -8,6 +8,8 @@ describe('capabilities', () => {
       canResizeImages: false,
       hasConversationList: false,
       googleSignIn: false,
+      cartEnabled: false,
+      customSizeEnabled: false,
     });
   });
 });

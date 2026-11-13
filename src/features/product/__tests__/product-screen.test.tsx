@@ -9,13 +9,17 @@ import { View } from 'react-native';
 
 import { clearSession, setSession } from '@/api/identity';
 import {
+  addToCartSuccess,
   API_URL,
+  freebieProduct,
+  getCartEmpty,
   getProductLoading,
   getProductNonApproved,
   getProductNotFound,
   getProductServerError,
   getProductSuccess,
   likeProductSuccess,
+  normalProduct,
   productDetail,
   trackProductViewSuccess,
 } from '@/test-utils/msw/handlers';
@@ -72,6 +76,18 @@ jest.mock('expo-router', () => ({
     replace: (href: unknown) => mockReplace(href),
   },
   Link: ({ children }: { children: ReactNode }) => children,
+}));
+
+jest.mock('@/config/capabilities', () => ({
+  capabilities: {
+    canUnlike: false,
+    hasPagination: false,
+    canResizeImages: false,
+    hasConversationList: false,
+    googleSignIn: false,
+    cartEnabled: true,
+    customSizeEnabled: false,
+  },
 }));
 
 const online: NetInfoState = {
@@ -219,5 +235,80 @@ describe('ProductScreen', () => {
     fireEvent.press(screen.getByRole('button', { name: 'Back' }));
 
     expect(mockReplace).toHaveBeenCalledWith('/');
+  });
+
+  it('routes a guest Add to cart tap to login', async () => {
+    server.use(
+      http.get(`${API_URL}/getProduct/:id`, () =>
+        HttpResponse.json({ status: true, message: 'ok', data: normalProduct }),
+      ),
+      trackProductViewSuccess,
+    );
+    await render(<ProductScreen />);
+    await screen.findByText('Ankara dress');
+
+    fireEvent.press(screen.getByRole('button', { name: 'Add to cart' }));
+
+    expect(mockPush).toHaveBeenCalledWith('/login?redirectTo=%2Fproduct%2F248');
+    expect(requestedUrls.some((url) => url.includes('/addToCart'))).toBe(false);
+  });
+
+  it('routes a guest Get for free tap to login', async () => {
+    server.use(
+      http.get(`${API_URL}/getProduct/:id`, () =>
+        HttpResponse.json({ status: true, message: 'ok', data: freebieProduct }),
+      ),
+      trackProductViewSuccess,
+    );
+    await render(<ProductScreen />);
+    await screen.findByText('Free tote bag');
+
+    fireEvent.press(screen.getByRole('button', { name: 'Get for free' }));
+
+    expect(mockPush).toHaveBeenCalledWith('/login?redirectTo=%2Fproduct%2F248');
+    expect(requestedUrls.some((url) => url.includes('/addToCart'))).toBe(false);
+  });
+
+  it('navigates a freebie to the checkout stub with ids only', async () => {
+    setSession({ token: 't', userId: 1 });
+    server.use(
+      http.get(`${API_URL}/getProduct/:id`, () =>
+        HttpResponse.json({ status: true, message: 'ok', data: freebieProduct }),
+      ),
+      trackProductViewSuccess,
+      getCartEmpty,
+    );
+    await render(<ProductScreen />);
+    await screen.findByText('Free tote bag');
+
+    await fireEvent.press(screen.getByRole('button', { name: 'S' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Red' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Get for free' }));
+
+    expect(mockPush).toHaveBeenCalledWith(
+      '/checkout?mode=buyNow&product=2&size=1&color=3&units=1',
+    );
+    expect(requestedUrls.some((url) => url.includes('/addToCart'))).toBe(false);
+  });
+
+  it('adds a normal product to the cart and shows the toast', async () => {
+    setSession({ token: 't', userId: 1 });
+    server.use(
+      http.get(`${API_URL}/getProduct/:id`, () =>
+        HttpResponse.json({ status: true, message: 'ok', data: normalProduct }),
+      ),
+      trackProductViewSuccess,
+      getCartEmpty,
+      addToCartSuccess,
+    );
+    await render(<ProductScreen />);
+    await screen.findByText('Ankara dress');
+
+    await fireEvent.press(screen.getByRole('button', { name: 'S' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Red' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Add to cart' }));
+
+    expect(await screen.findByText('Added to cart')).toBeOnTheScreen();
+    expect(requestedUrls.some((url) => url.includes('/addToCart'))).toBe(true);
   });
 });

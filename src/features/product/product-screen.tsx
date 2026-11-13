@@ -5,12 +5,14 @@ import {
   usePathname,
   type Href,
 } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 
 import { trackProductView, type ProductDetail } from '@/api/endpoints/product';
 import { getUserId } from '@/api/identity';
+import { useCart } from '@/api/queries/use-cart';
 import { useProduct } from '@/api/queries/use-product';
+import { capabilities } from '@/config/capabilities';
 import { DocumentTitle } from '@/components/document-title';
 import { Badge } from '@/components/ui/badge';
 import { TOUCH_TARGET } from '@/components/ui/constants';
@@ -30,11 +32,14 @@ import { Text } from '@/components/ui/text';
 import { requireAuth, resolveHeartAction } from '@/features/auth/require-auth';
 import { useSessionStatus } from '@/session/session-store';
 import { formatNaira } from '@/utils/format-naira';
+import { useDesktopLayout } from '@/utils/layout';
 import { mediaUrl } from '@/utils/media-url';
 
 import { isLikedBy } from '@/features/home/selectors';
 import { useLikeProduct } from '@/features/home/use-like-product';
-import { averageRating, stockLabel } from './selectors';
+import { ProductActionArea, SizeColourPicker } from './product-action-area';
+import { averageRating, buyNowPath, remainingStockForProduct, stockLabel } from './selectors';
+import { useAddToCart } from './use-add-to-cart';
 
 function ProductSkeleton() {
   return (
@@ -84,11 +89,27 @@ function ProductContent({
   userId,
   offline,
   onRetry,
+  cartEnabled,
+  sizeId,
+  colorId,
+  onSizeChange,
+  onColorChange,
+  showSizeError,
+  showColorError,
+  actionArea,
 }: {
   product: ProductDetail;
   userId: string | number | null;
   offline: boolean;
   onRetry: () => void;
+  cartEnabled: boolean;
+  sizeId: string | number | null;
+  colorId: string | number | null;
+  onSizeChange: (id: string | number) => void;
+  onColorChange: (id: string | number) => void;
+  showSizeError: boolean;
+  showColorError: boolean;
+  actionArea: ReactNode;
 }) {
   const free = product.price === 0;
   const oldPrice =
@@ -147,14 +168,31 @@ function ProductContent({
         ) : null}
       </View>
 
-      <TagList
-        label="Available in sizes"
-        values={product.sizes.map((size) => size.size)}
-      />
-      <TagList
-        label="Available in colours"
-        values={product.colours.map((colour) => colour.name)}
-      />
+      {!product.isMakeup ? (
+        cartEnabled ? (
+          <SizeColourPicker
+            sizes={product.sizes}
+            colours={product.colours}
+            sizeId={sizeId}
+            colorId={colorId}
+            onSizeChange={onSizeChange}
+            onColorChange={onColorChange}
+            showSizeError={showSizeError}
+            showColorError={showColorError}
+          />
+        ) : (
+          <>
+            <TagList
+              label="Available in sizes"
+              values={product.sizes.map((size) => size.size)}
+            />
+            <TagList
+              label="Available in colours"
+              values={product.colours.map((colour) => colour.name)}
+            />
+          </>
+        )
+      ) : null}
 
       {product.description ? (
         <ExpandableDescription text={product.description} />
@@ -196,6 +234,9 @@ function ProductContent({
           <Text variant="callout" color="fg-muted">
             Availability: {product.offer ?? 'not set'}
           </Text>
+          <Text variant="callout" color="fg-muted">
+            Booking isn&apos;t available in the app yet
+          </Text>
           {product.coverages.map((coverage) => (
             <View
               key={coverage.area}
@@ -215,7 +256,101 @@ function ProductContent({
           ))}
         </View>
       ) : null}
+
+      {actionArea}
     </ScrollView>
+  );
+}
+
+function PurchasableProduct({
+  product,
+  userId,
+  offline,
+  onRetry,
+}: {
+  product: ProductDetail;
+  userId: string | number | null;
+  offline: boolean;
+  onRetry: () => void;
+}) {
+  const isDesktop = useDesktopLayout();
+  const pathname = usePathname();
+  const status = useSessionStatus();
+  const [sizeId, setSizeId] = useState<string | number | null>(null);
+  const [colorId, setColorId] = useState<string | number | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [showValidation, setShowValidation] = useState(false);
+  const addToCart = useAddToCart();
+  const cart = useCart();
+  const remaining = remainingStockForProduct(
+    cart.data ?? [],
+    product.id,
+    product.units,
+  );
+
+  const needsSize = product.sizes.length > 0;
+  const needsColor = product.colours.length > 0;
+  const signedIn = status === 'signedIn';
+
+  const handleAddToCart = () => {
+    if (!signedIn) {
+      router.push(requireAuth(`/product/${product.id}` as Href, false, pathname));
+      return;
+    }
+    if ((needsSize && sizeId == null) || (needsColor && colorId == null)) {
+      setShowValidation(true);
+      return;
+    }
+    addToCart.mutate({
+      product,
+      sizeId: sizeId ?? 0,
+      colorId: colorId ?? 0,
+      units: quantity,
+    });
+  };
+
+  const handleGetForFree = () => {
+    if (!signedIn) {
+      router.push(requireAuth(`/product/${product.id}` as Href, false, pathname));
+      return;
+    }
+    if ((needsSize && sizeId == null) || (needsColor && colorId == null)) {
+      setShowValidation(true);
+      return;
+    }
+    router.push(buyNowPath(product.id, sizeId, colorId) as Href);
+  };
+
+  const actionArea = capabilities.cartEnabled ? (
+    <ProductActionArea
+      product={product}
+      quantity={quantity}
+      remaining={remaining}
+      pending={addToCart.isPending}
+      onQuantityChange={setQuantity}
+      onAddToCart={handleAddToCart}
+      onGetForFree={handleGetForFree}
+    />
+  ) : null;
+
+  return (
+    <View className="flex-1">
+      <ProductContent
+        product={product}
+        userId={userId}
+        offline={offline}
+        onRetry={onRetry}
+        cartEnabled={capabilities.cartEnabled}
+        sizeId={sizeId}
+        colorId={colorId}
+        onSizeChange={setSizeId}
+        onColorChange={setColorId}
+        showSizeError={showValidation && needsSize && sizeId == null}
+        showColorError={showValidation && needsColor && colorId == null}
+        actionArea={isDesktop ? actionArea : null}
+      />
+      {!isDesktop ? actionArea : null}
+    </View>
   );
 }
 
@@ -278,7 +413,7 @@ export function ProductScreen() {
       );
     }
     return (
-      <ProductContent
+      <PurchasableProduct
         product={product}
         userId={userId}
         offline={offline}

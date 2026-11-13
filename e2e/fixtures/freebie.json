@@ -1,0 +1,27 @@
+{
+  "status": true,
+  "message": "Successfully retrieved product.",
+  "data": {
+    "id": 2,
+    "old_price": null,
+    "price": 0,
+    "name": "Free tote bag",
+    "status": "approved",
+    "description": "A free canvas tote with every order.",
+    "units": 5,
+    "thrift": false,
+    "media": [{ "url": "profile-pic/tote.webp" }],
+    "sizes": [{ "id": 4, "size": "One size" }],
+    "colours": [{ "id": 5, "name": "Natural" }],
+    "ratings": [],
+    "store": {
+      "id": "store-1",
+      "name": "Ada Threads",
+      "logo": "profile-pic/logo.webp"
+    },
+    "likes": [],
+    "isMakeup": 0,
+    "coverages": [],
+    "availability": []
+  }
+}

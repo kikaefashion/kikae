@@ -56,8 +56,8 @@ describe('ProductDetailSchema', () => {
     expect(parsed.availability).toEqual([
       { dated: 'Sunday,06:00 - 18:00', available: true },
     ]);
-    expect(parsed.sizes).toEqual([{ size: 'M' }]);
-    expect(parsed.colours).toEqual([{ name: 'Red' }]);
+    expect(parsed.sizes).toEqual([{ id: 1, size: 'M' }]);
+    expect(parsed.colours).toEqual([{ id: 1, name: 'Red' }]);
     expect(parsed.media).toEqual([{ url: 'profile-pic/x.webp' }]);
     expect(parsed.store).toEqual({
       id: 'store-1',
