@@ -8,7 +8,7 @@ describe('capabilities', () => {
       canResizeImages: false,
       hasConversationList: false,
       googleSignIn: false,
-      cartEnabled: false,
+      cartEnabled: true,
       customSizeEnabled: false,
     });
   });
