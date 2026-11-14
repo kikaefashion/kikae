@@ -83,7 +83,7 @@ export function SizeColourPicker({
   );
 }
 
-function QuantityStepper({
+export function QuantityStepper({
   quantity,
   max,
   disabled,
@@ -152,7 +152,12 @@ export function ProductActionArea({
       style={{ paddingBottom: insets.bottom + 16 }}
     >
       {free ? (
-        <Button variant="primary" size="lg" onPress={onGetForFree} disabled={disabled}>
+        <Button
+          variant="primary"
+          size="lg"
+          onPress={onGetForFree}
+          disabled={disabled}
+        >
           Get for free
         </Button>
       ) : (

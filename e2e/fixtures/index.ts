@@ -254,7 +254,9 @@ export const banners = load('banners.json', BannerEnvelopeSchema);
 export const product = load('product.json', ProductEnvelopeSchema);
 export const freebie = load('freebie.json', ProductEnvelopeSchema);
 export const cart = load('cart.json', CartEnvelopeSchema);
+export const cartPopulated = load('cart-populated.json', CartEnvelopeSchema);
 
 export type CurrentUser = z.infer<typeof CurrentUserSchema>;
 export type ProductCategory = z.infer<typeof ProductCategorySchema>;
 export type ProductDetail = z.infer<typeof ProductDetailSchema>;
+export type CartLine = z.infer<typeof CartLineSchema>;
