@@ -1,6 +1,9 @@
 import { Tabs, TabList, TabSlot, TabTrigger } from 'expo-router/ui';
 import type { StyleProp, ViewStyle } from 'react-native';
 
+import { useCart } from '@/api/queries/use-cart';
+import { capabilities } from '@/config/capabilities';
+import { cartUnits } from '@/features/cart/selectors';
 import { useSessionStatus } from '@/session/session-store';
 import { useDesktopLayout } from '@/utils/layout';
 
@@ -16,6 +19,8 @@ import { TopBar } from './top-bar';
 export default function AppTabs() {
   const isDesktop = useDesktopLayout();
   const signedIn = useSessionStatus() === 'signedIn';
+  const cart = useCart();
+  const cartCount = capabilities.cartEnabled ? cartUnits(cart.data ?? []) : 0;
   const variant = isDesktop ? 'sidebar' : 'bottom';
   const entries = getNavEntries(signedIn);
 
@@ -25,7 +30,7 @@ export default function AppTabs() {
 
   return (
     <Tabs>
-      <TopBar isDesktop={isDesktop} />
+      <TopBar isDesktop={isDesktop} cartCount={cartCount} />
       <TabSlot style={contentStyle} />
       <TabList asChild>
         <TabBar isDesktop={isDesktop}>
