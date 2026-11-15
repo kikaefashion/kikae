@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type ElementRef } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ElementRef,
+} from 'react';
 import {
   FlatList,
   Platform,
@@ -59,14 +65,17 @@ export function Gallery({ images, alt }: GalleryProps) {
   const pageWidth = containerWidth || width;
   const active = Math.min(index, Math.max(0, urls.length - 1));
 
-  const goTo = (next: number) => {
-    const clamped = Math.min(Math.max(0, next), Math.max(0, urls.length - 1));
-    setIndex(clamped);
-    listRef.current?.scrollToOffset({
-      offset: clamped * pageWidth,
-      animated: true,
-    });
-  };
+  const goTo = useCallback(
+    (next: number) => {
+      const clamped = Math.min(Math.max(0, next), Math.max(0, urls.length - 1));
+      setIndex(clamped);
+      listRef.current?.scrollToOffset({
+        offset: clamped * pageWidth,
+        animated: true,
+      });
+    },
+    [urls.length, pageWidth],
+  );
 
   // Web-only left/right arrow keys for the phone pager.
   useEffect(() => {
@@ -84,7 +93,7 @@ export function Gallery({ images, alt }: GalleryProps) {
     };
     node.addEventListener('keydown', onKey);
     return () => node.removeEventListener('keydown', onKey);
-  }, [isDesktop, active, urls.length, pageWidth]);
+  }, [isDesktop, active, goTo]);
 
   if (urls.length === 0) {
     return (

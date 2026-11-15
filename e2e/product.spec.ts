@@ -71,7 +71,7 @@ test.describe('product detail', () => {
       page.getByRole('heading', { name: 'Ankara dress' }),
     ).toBeVisible();
 
-    await page.getByRole('button', { name: 'S' }).click();
+    await page.getByRole('button', { name: 'S', exact: true }).click();
     await page.getByRole('button', { name: 'Red' }).click();
     await page.getByRole('button', { name: 'Add to cart' }).click();
 
