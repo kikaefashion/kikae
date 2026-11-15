@@ -20,7 +20,9 @@ export default function AppTabs() {
   const isDesktop = useDesktopLayout();
   const signedIn = useSessionStatus() === 'signedIn';
   const cart = useCart();
-  const cartCount = capabilities.cartEnabled ? cartUnits(cart.data ?? []) : 0;
+  const cartCount = capabilities.cartEnabled
+    ? cartUnits(cart.data?.lines ?? [])
+    : 0;
   const variant = isDesktop ? 'sidebar' : 'bottom';
   const entries = getNavEntries(signedIn);
 

@@ -6,7 +6,7 @@ import { Text } from '@/components/ui/text';
 import { type Breakpoint, useBreakpoint } from '@/utils/layout';
 
 /** Page margin by breakpoint (layout-system.md §2). */
-const PAGE_MARGIN: Record<Breakpoint, number> = {
+export const PAGE_MARGIN: Record<Breakpoint, number> = {
   base: 16,
   sm: 24,
   md: 24,
@@ -16,7 +16,7 @@ const PAGE_MARGIN: Record<Breakpoint, number> = {
 };
 
 /** Max content width (content area only) by breakpoint (layout-system.md §2). */
-const MAX_CONTENT_WIDTH: Record<Breakpoint, number | undefined> = {
+export const MAX_CONTENT_WIDTH: Record<Breakpoint, number | undefined> = {
   base: undefined,
   sm: undefined,
   md: undefined,

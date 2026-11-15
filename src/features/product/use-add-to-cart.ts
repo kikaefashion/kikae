@@ -1,7 +1,12 @@
 import { router } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { addToCart, updateCart, type CartLine } from '@/api/endpoints/cart';
+import {
+  addToCart,
+  updateCart,
+  type CartLine,
+  type CartResult,
+} from '@/api/endpoints/cart';
 import type { ProductDetail } from '@/api/endpoints/product';
 import { queryKeys } from '@/api/query-keys';
 import { useToast } from '@/components/ui/toast';
@@ -42,7 +47,8 @@ export function useAddToCart() {
     }: AddToCartVariables): Promise<AddToCartResult> => {
       if (product.isMakeup || product.price === 0) return { status: 'refused' };
 
-      const cart = queryClient.getQueryData<CartLine[]>(queryKeys.cart) ?? [];
+      const cart =
+        queryClient.getQueryData<CartResult>(queryKeys.cart)?.lines ?? [];
       const plan = planAddToCart(cart, product, sizeId, colorId, units);
       if (plan.kind === 'full') return { status: 'full' };
 
@@ -67,13 +73,17 @@ export function useAddToCart() {
       if (result.status === 'refused') return;
 
       if (result.settle === 'update') {
-        queryClient.setQueryData<CartLine[]>(queryKeys.cart, (current) =>
-          (current ?? []).map((line) =>
+        queryClient.setQueryData<CartResult>(queryKeys.cart, (current) => {
+          const lines = (current?.lines ?? []).map((line) =>
             line.id === result.line.id ? result.line : line,
-          ),
-        );
+          );
+          return { lines, failedCount: current?.failedCount ?? 0 };
+        });
       } else {
-        void queryClient.invalidateQueries({ queryKey: queryKeys.cart });
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.cart,
+          refetchType: 'all',
+        });
       }
       toast.success('Added to cart', {
         action: { label: 'View cart', onPress: () => router.push('/cart') },

@@ -131,8 +131,15 @@ describe('CartScreen', () => {
 
   it('removes a line after a destructive confirmation', async () => {
     setSession({ token: 't', userId: 1 });
+    let removed = false;
     server.use(
-      getCart([makeLine(738, { id: 243, name: 'Hoodie' })]),
+      http.post(`${API_URL}/getCart`, () =>
+        HttpResponse.json({
+          status: true,
+          message: 'ok',
+          data: removed ? [] : [makeLine(738, { id: 243, name: 'Hoodie' })],
+        }),
+      ),
       removeFromCartSuccess,
     );
 
@@ -144,9 +151,32 @@ describe('CartScreen', () => {
     );
     expect(screen.getByText('Remove item?')).toBeOnTheScreen();
 
+    removed = true;
     await fireEvent.press(screen.getByRole('button', { name: 'Remove' }));
 
     expect(await screen.findByText('Your cart is empty')).toBeOnTheScreen();
+  });
+
+  it('shows parseable lines and reports failed lines instead of empty', async () => {
+    setSession({ token: 't', userId: 1 });
+    server.use(
+      http.post(`${API_URL}/getCart`, () =>
+        HttpResponse.json({
+          status: true,
+          message: 'ok',
+          data: [
+            makeLine(738, { id: 243, name: 'Hoodie' }),
+            { id: 'bad-line' },
+          ],
+        }),
+      ),
+    );
+
+    await render(<CartScreen />);
+
+    expect(await screen.findByText('Hoodie')).toBeOnTheScreen();
+    expect(screen.getByText("1 item couldn't be loaded")).toBeOnTheScreen();
+    expect(screen.queryByText('Your cart is empty')).toBeNull();
   });
 
   it('redirects a guest to login', async () => {
@@ -155,5 +185,15 @@ describe('CartScreen', () => {
     expect(
       screen.getByText('redirect:/login?redirectTo=%2Fcart'),
     ).toBeOnTheScreen();
+  });
+
+  it('shows a loading state instead of empty while the signed-in user id is unresolved', async () => {
+    setSession({ token: 't', userId: null });
+
+    await render(<CartScreen />);
+
+    expect(screen.getAllByRole('progressbar').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Your cart is empty')).toBeNull();
+    expect(screen.queryByText(/redirect:/)).toBeNull();
   });
 });

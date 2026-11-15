@@ -6,7 +6,10 @@ import { getUserId } from '../identity';
 
 /** Coerces a missing or `null` list to `[]` — the backend nulls empty relations. */
 function list<T extends z.ZodTypeAny>(item: T): z.ZodType<z.infer<T>[]> {
-  return z.array(item).nullish().transform((value) => value ?? []);
+  return z
+    .array(item)
+    .nullish()
+    .transform((value) => value ?? []);
 }
 
 /** Product embedded in each cart line — only the fields the app uses. */
@@ -68,16 +71,45 @@ export function addToCart(input: {
   });
 }
 
-/** `POST /getCart` — `{user_id}`; the id comes from the identity module. */
-export function fetchCart(signal?: AbortSignal): Promise<CartLine[]> {
-  return requestData({
+/** Parsed `getCart` result: the valid lines plus a count of lines that failed. */
+export interface CartResult {
+  lines: CartLine[];
+  failedCount: number;
+}
+
+/**
+ * `POST /getCart` — `{user_id}`; the id comes from the identity module and is
+ * sent with its exact type (string ids stay strings, number ids stay numbers).
+ *
+ * Each line is parsed separately so one malformed line never hides the valid
+ * ones: the screen renders the good lines and reports the failure. A response
+ * whose `data` is not an array still throws (error state with Retry).
+ */
+export async function fetchCart(signal?: AbortSignal): Promise<CartResult> {
+  const raw = await requestData<unknown[]>({
     base: 'api',
     path: '/getCart',
     method: 'POST',
     body: { user_id: getUserId() },
     signal,
-    dataSchema: z.array(CartLineSchema),
+    dataSchema: z
+      .array(z.unknown())
+      .nullish()
+      .transform((value) => value ?? []),
   });
+
+  const lines: CartLine[] = [];
+  let failedCount = 0;
+  for (const entry of raw) {
+    const parsed = CartLineSchema.safeParse(entry);
+    if (parsed.success) {
+      lines.push(parsed.data);
+    } else {
+      failedCount += 1;
+    }
+  }
+
+  return { lines, failedCount };
 }
 
 /**

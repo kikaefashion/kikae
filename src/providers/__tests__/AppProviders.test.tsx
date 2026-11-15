@@ -5,11 +5,13 @@ import { render, screen, waitFor } from '@/test-utils/render';
 import { AppProviders } from '../AppProviders';
 
 const mockRestoreSession = jest.fn().mockResolvedValue(undefined);
+const mockHydrateSessionUser = jest.fn().mockResolvedValue(true);
 const mockHideAsync = jest.fn().mockResolvedValue(true);
 const mockUseFonts = jest.fn().mockReturnValue([true, null]);
 
 jest.mock('@/session/session-store', () => ({
   restoreSession: () => mockRestoreSession(),
+  hydrateSessionUser: () => mockHydrateSessionUser(),
 }));
 
 jest.mock('expo-splash-screen', () => ({
@@ -26,6 +28,7 @@ describe('AppProviders', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockRestoreSession.mockResolvedValue(undefined);
+    mockHydrateSessionUser.mockResolvedValue(true);
     mockHideAsync.mockResolvedValue(true);
     mockUseFonts.mockReturnValue([true, null]);
   });

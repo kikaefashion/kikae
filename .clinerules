@@ -1,18 +1,38 @@
+# Working rules
+
 - Use targeted edits; never rewrite a whole file for a small change.
-- Run only the tests for the file you changed (yarn test <path>) plus
-  yarn typecheck. Run full yarn validate once at the end of a task.
-- If the same error persists after two attempts, stop and tell me what you tried.
-- Do not browse the web or fetch docs unless I ask; use package.json and the repo.
+- Read only the files named in the task. Do not open docs/design/audit.md,
+  docs/backend-findings.md or docs/inventory.md unless the task says so.
+- Do not edit docs/design unless the task says so.
+- Do not browse the web or fetch docs unless asked; use package.json and the repo.
 - Keep plans to 10 lines and summaries to 10 lines. Ask questions only if blocked.
+- If the same error persists after two attempts, stop and report what you tried.
 
-# Testing conventions
+# Running checks (cost control)
 
-- Test behavior, not implementation. Query by role, label, or text — never by testID.
-- Every screen tests loading, error, empty, and populated states.
-- All network calls are mocked with typed MSW handlers (response bodies typed from app types via `z.infer` or generated types).
-- No whole-screen snapshot tests.
-- No `any` in tests (enforced by `@typescript-eslint/no-explicit-any`).
-- Every bug fix ships with a regression test.
-- A test must fail if the feature it covers is broken.
-- When a new feature folder is added, it must be added to `collectCoverageFrom` in `jest.config.js` in the same PR, together with tests.
-- Every route sets a unique document title in the format "Page | Kikae". Dynamic pages (product, store) set it from their data.
+- Never run yarn validate, yarn test or yarn test:e2e; the human runs the full suite.
+- After each step run yarn typecheck and yarn test:fast <changed test files>, with
+  output capped: append `2>&1 | Select-Object -Last 40`.
+
+# Testing policy
+
+- Test logic, data mapping, privacy (dropped fields), money, auth and guest gating,
+  and state derivation. One smoke test per screen (populated, loading, error).
+- No per-variant or per-prop tests for presentational components, and no tests
+  that only restate the implementation.
+- Test behavior, not implementation. Query by role, label or text, never testID.
+  No whole-screen snapshots. No `any`.
+- Network calls use typed MSW handlers (types from the Zod schemas via z.infer).
+- Every bug fix ships with a regression test; a test must fail if the feature it
+  covers is broken.
+- New source folders go into collectCoverageFrom in jest.config.js in the same PR.
+
+# App rules
+
+- Every route sets a unique document title: "Page | Kikae" (dynamic pages from
+  their data).
+- Schemas declare only the fields the app uses; never log or store tokens or other
+  private fields.
+- Tokens only: no hex colors, no arbitrary Tailwind values; all text goes through
+  the Text component.
+- Routes outside the tabs use the shared screen wrapper and respect safe-area insets.

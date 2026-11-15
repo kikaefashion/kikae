@@ -253,6 +253,10 @@ export const home = load('home.json', HomeEnvelopeSchema);
 export const banners = load('banners.json', BannerEnvelopeSchema);
 export const product = load('product.json', ProductEnvelopeSchema);
 export const freebie = load('freebie.json', ProductEnvelopeSchema);
+export const productGallery = load(
+  'product-gallery.json',
+  ProductEnvelopeSchema,
+);
 export const cart = load('cart.json', CartEnvelopeSchema);
 export const cartPopulated = load('cart-populated.json', CartEnvelopeSchema);
 

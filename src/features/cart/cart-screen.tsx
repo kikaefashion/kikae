@@ -21,7 +21,7 @@ import { Text } from '@/components/ui/text';
 import { PAGE_TITLES } from '@/config/titles';
 import { requireAuth } from '@/features/auth/require-auth';
 import { QuantityStepper } from '@/features/product/product-action-area';
-import { useSessionStatus } from '@/session/session-store';
+import { useSessionStatus, useUserId } from '@/session/session-store';
 import { mediaUrl } from '@/utils/media-url';
 
 import {
@@ -153,21 +153,25 @@ function CheckoutBar({
 
 function CartContent() {
   const cart = useCart();
+  const userId = useUserId();
   const { isConnected } = useConnectivity();
   const { update, remove } = useCartMutations();
   const [pendingRemoval, setPendingRemoval] = useState<CartLine | null>(null);
 
-  const lines = cart.data ?? [];
+  const lines = cart.data?.lines ?? [];
+  const failedCount = cart.data?.failedCount ?? 0;
   const offline = isConnected === false;
   const busy = update.isPending || remove.isPending;
 
-  if (cart.isLoading) return <CartSkeleton />;
+  // The cart query waits for the resolved user id; show the skeleton until it
+  // arrives rather than flashing an empty cart.
+  if (userId === null || cart.isLoading) return <CartSkeleton />;
 
   if (cart.isError) {
     return <ErrorState onRetry={() => void cart.refetch()} />;
   }
 
-  if (lines.length === 0) {
+  if (lines.length === 0 && failedCount === 0) {
     return (
       <EmptyState
         title="Your cart is empty"
@@ -192,6 +196,14 @@ function CartContent() {
             onActionPress={() => void cart.refetch()}
           />
         ) : null}
+        {failedCount > 0 ? (
+          <InlineBanner
+            status="error"
+            label={`${failedCount} item${failedCount === 1 ? '' : 's'} couldn't be loaded`}
+            actionLabel="Retry"
+            onActionPress={() => void cart.refetch()}
+          />
+        ) : null}
         {lines.map((line) => (
           <CartLineRow
             key={line.id}
@@ -203,10 +215,12 @@ function CartContent() {
           />
         ))}
       </ScrollView>
-      <CheckoutBar
-        subtotal={cartSubtotal(lines)}
-        onCheckout={() => router.push('/checkout' as Href)}
-      />
+      {lines.length > 0 ? (
+        <CheckoutBar
+          subtotal={cartSubtotal(lines)}
+          onCheckout={() => router.push('/checkout' as Href)}
+        />
+      ) : null}
       <Dialog
         visible={pendingRemoval !== null}
         onClose={() => setPendingRemoval(null)}

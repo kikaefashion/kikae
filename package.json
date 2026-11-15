@@ -75,6 +75,7 @@
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test": "jest --ci --coverage",
+    "test:fast": "jest --silent --bail --coverage=false",
     "test:watch": "jest --watch",
     "test:e2e": "node scripts/test-e2e.js",
     "validate": "yarn typecheck && yarn lint && yarn test",

@@ -4,14 +4,15 @@ import {
   removeFromCart,
   updateCart,
   type CartLine,
+  type CartResult,
 } from '@/api/endpoints/cart';
 import { queryKeys } from '@/api/query-keys';
 import { useToast } from '@/components/ui/toast';
 
 /**
  * Cart line mutations. `updateCart` settles the `['cart']` cache from its
- * response; `removeFromCart` removes the line locally (its response body is
- * UNVERIFIED, so we don't parse it).
+ * response line; `removeFromCart` (whose response carries no line) invalidates
+ * and refetches the cart instead.
  */
 export function useCartMutations() {
   const queryClient = useQueryClient();
@@ -21,11 +22,12 @@ export function useCartMutations() {
     mutationFn: ({ line, units }: { line: CartLine; units: number }) =>
       updateCart(line.id, units, line.product.id),
     onSuccess: (updated) => {
-      queryClient.setQueryData<CartLine[]>(queryKeys.cart, (current) =>
-        (current ?? []).map((line) =>
+      queryClient.setQueryData<CartResult>(queryKeys.cart, (current) => {
+        const lines = (current?.lines ?? []).map((line) =>
           line.id === updated.id ? updated : line,
-        ),
-      );
+        );
+        return { lines, failedCount: current?.failedCount ?? 0 };
+      });
     },
     onError: () => {
       toast.error("Couldn't update quantity. Try again.");
@@ -34,10 +36,13 @@ export function useCartMutations() {
 
   const remove = useMutation({
     mutationFn: (line: CartLine) => removeFromCart(line.id),
-    onSuccess: (_data, line) => {
-      queryClient.setQueryData<CartLine[]>(queryKeys.cart, (current) =>
-        (current ?? []).filter((entry) => entry.id !== line.id),
-      );
+    onSuccess: () => {
+      // The remove response carries no line, so the cache is re-read from the
+      // backend rather than settled from a response body.
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.cart,
+        refetchType: 'all',
+      });
       toast.success('Removed from cart');
     },
     onError: () => {

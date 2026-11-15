@@ -6,7 +6,15 @@ import {
   type Href,
 } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  View,
+  useWindowDimensions,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 
 import { trackProductView, type ProductDetail } from '@/api/endpoints/product';
 import { getUserId } from '@/api/identity';
@@ -26,19 +34,28 @@ import { InlineBanner } from '@/components/ui/inline-banner';
 import { useConnectivity } from '@/components/ui/offline-state';
 import { Price } from '@/components/ui/price';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import {
+  MAX_CONTENT_WIDTH,
+  PAGE_MARGIN,
+} from '@/components/navigation/screen-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TagList } from '@/components/ui/tag-list';
 import { Text } from '@/components/ui/text';
 import { requireAuth, resolveHeartAction } from '@/features/auth/require-auth';
 import { useSessionStatus } from '@/session/session-store';
 import { formatNaira } from '@/utils/format-naira';
-import { useDesktopLayout } from '@/utils/layout';
+import { useBreakpoint, useDesktopLayout } from '@/utils/layout';
 import { mediaUrl } from '@/utils/media-url';
 
 import { isLikedBy } from '@/features/home/selectors';
 import { useLikeProduct } from '@/features/home/use-like-product';
 import { ProductActionArea, SizeColourPicker } from './product-action-area';
-import { averageRating, buyNowPath, remainingStockForProduct, stockLabel } from './selectors';
+import {
+  averageRating,
+  buyNowPath,
+  remainingStockForProduct,
+  stockLabel,
+} from './selectors';
 import { useAddToCart } from './use-add-to-cart';
 
 function ProductSkeleton() {
@@ -111,6 +128,12 @@ function ProductContent({
   showColorError: boolean;
   actionArea: ReactNode;
 }) {
+  const breakpoint = useBreakpoint();
+  const isDesktop = useDesktopLayout();
+  const { height } = useWindowDimensions();
+  const margin = PAGE_MARGIN[breakpoint];
+  const maxWidth = MAX_CONTENT_WIDTH[breakpoint];
+
   const free = product.price === 0;
   const oldPrice =
     product.old_price != null && product.old_price > product.price
@@ -119,19 +142,19 @@ function ProductContent({
   const stock = stockLabel(product.units);
   const rating = averageRating(product.ratings);
 
-  return (
-    <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
-      {offline ? (
-        <InlineBanner
-          status="offline"
-          label="You're offline — showing saved product"
-          actionLabel="Retry"
-          onActionPress={onRetry}
-        />
-      ) : null}
+  const gallery = <Gallery images={product.media} alt={product.name} />;
 
-      <Gallery images={product.media} alt={product.name} />
+  const offlineBanner = offline ? (
+    <InlineBanner
+      status="offline"
+      label="You're offline — showing saved product"
+      actionLabel="Retry"
+      onActionPress={onRetry}
+    />
+  ) : null;
 
+  const info = (
+    <>
       <View className="gap-8">
         <Text variant="title-1" color="fg" accessibilityRole="header">
           {product.name}
@@ -258,6 +281,36 @@ function ProductContent({
       ) : null}
 
       {actionArea}
+    </>
+  );
+
+  const galleryColumnStyle: StyleProp<ViewStyle> = [
+    { width: '55%', maxWidth: height * 0.64, flexShrink: 0 },
+    Platform.OS === 'web'
+      ? ({ position: 'sticky', top: 16 } as unknown as ViewStyle)
+      : null,
+  ];
+
+  return (
+    <ScrollView contentContainerStyle={{ padding: margin, gap: 16 }}>
+      {isDesktop ? (
+        <View
+          className="gap-16"
+          style={{ width: '100%', maxWidth, alignSelf: 'center' }}
+        >
+          {offlineBanner}
+          <View className="flex-row items-start gap-24">
+            <View style={galleryColumnStyle}>{gallery}</View>
+            <View className="flex-1 gap-16">{info}</View>
+          </View>
+        </View>
+      ) : (
+        <>
+          {offlineBanner}
+          {gallery}
+          {info}
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -283,7 +336,7 @@ function PurchasableProduct({
   const addToCart = useAddToCart();
   const cart = useCart();
   const remaining = remainingStockForProduct(
-    cart.data ?? [],
+    cart.data?.lines ?? [],
     product.id,
     product.units,
   );
@@ -294,7 +347,9 @@ function PurchasableProduct({
 
   const handleAddToCart = () => {
     if (!signedIn) {
-      router.push(requireAuth(`/product/${product.id}` as Href, false, pathname));
+      router.push(
+        requireAuth(`/product/${product.id}` as Href, false, pathname),
+      );
       return;
     }
     if ((needsSize && sizeId == null) || (needsColor && colorId == null)) {
@@ -311,7 +366,9 @@ function PurchasableProduct({
 
   const handleGetForFree = () => {
     if (!signedIn) {
-      router.push(requireAuth(`/product/${product.id}` as Href, false, pathname));
+      router.push(
+        requireAuth(`/product/${product.id}` as Href, false, pathname),
+      );
       return;
     }
     if ((needsSize && sizeId == null) || (needsColor && colorId == null)) {

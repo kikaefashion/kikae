@@ -11,6 +11,7 @@ import {
   loginSuccess,
   loginUnverified,
   product,
+  productGallery,
 } from '../fixtures';
 
 /**
@@ -118,8 +119,8 @@ export async function mockBackend(
     });
   });
 
-  // Product detail: id 1 is the known product; id 2 is a freebie; anything
-  // else is a 404.
+  // Product detail: id 1 is the known product; id 2 is a freebie; id 3 is a
+  // gallery product with five images; anything else is a 404.
   await page.route(/\/getProduct\//, async (route) => {
     const url = new URL(route.request().url());
     const id = url.pathname.split('/').pop();
@@ -136,6 +137,14 @@ export async function mockBackend(
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(freebie),
+      });
+      return;
+    }
+    if (id === '3') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(productGallery),
       });
       return;
     }
@@ -166,7 +175,10 @@ export async function mockBackend(
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ success: true, message: 'Successfully added to cart.' }),
+      body: JSON.stringify({
+        success: true,
+        message: 'Successfully added to cart.',
+      }),
     });
   });
 
