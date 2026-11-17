@@ -19,6 +19,11 @@ test.describe('cart', () => {
     await mockBackend(page, 'success');
     await context.addInitScript(() => {
       window.localStorage.setItem('kikae.auth.token', 'e2e-fake-token');
+      // The cart query is gated on a resolved user id (`useCart` is disabled
+      // until it exists), so seed it too. A real signed-in session persists
+      // both; token-only relies on the async `/currentUser` backfill, which
+      // races the fast add-to-cart → cart navigation below.
+      window.localStorage.setItem('kikae.auth.userId', '1');
     });
 
     // Stateful cart: starts empty and gains the line once addToCart fires

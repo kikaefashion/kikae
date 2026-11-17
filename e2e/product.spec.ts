@@ -65,6 +65,7 @@ test.describe('product detail', () => {
     await mockBackend(page, 'success');
     await context.addInitScript(() => {
       window.localStorage.setItem('kikae.auth.token', 'e2e-fake-token');
+      window.localStorage.setItem('kikae.auth.userId', '1');
     });
     await page.goto('/product/1');
     await expect(
@@ -85,6 +86,7 @@ test.describe('product detail', () => {
     await mockBackend(page, 'success');
     await context.addInitScript(() => {
       window.localStorage.setItem('kikae.auth.token', 'e2e-fake-token');
+      window.localStorage.setItem('kikae.auth.userId', '1');
     });
     await page.goto('/product/2');
     await expect(
