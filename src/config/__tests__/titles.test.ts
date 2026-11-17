@@ -26,6 +26,7 @@ describe('document titles', () => {
       makeup: 'Makeup',
       profile: 'Profile',
       cart: 'Cart',
+      checkout: 'Checkout',
       notifications: 'Notifications',
       stores: 'Stores',
       freebies: 'Freebies',
