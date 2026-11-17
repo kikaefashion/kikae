@@ -14,23 +14,28 @@ export interface ImageProps {
   alt: string;
   /** Content fit; default cover. */
   contentFit?: ImageContentFit;
+  /** Web-only HTML `loading` hint forwarded to `expo-image` (default `lazy`). */
+  loading?: 'lazy' | 'eager';
   className?: string;
   style?: StyleProp<ViewStyle>;
 }
 
 /**
  * Theme-aware image over `expo-image`: a `skeleton` placeholder behind the
- * image while it loads, an error fallback when the source is missing or fails,
- * and memory + disk caching.
+ * image while it loads (removed once loaded so `contain` letterboxes show the
+ * frame surface), an error fallback when the source is missing or fails, and
+ * memory + disk caching.
  */
 export function Image({
   source,
   alt,
   contentFit = 'cover',
+  loading,
   className,
   style,
 }: ImageProps) {
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   if (!source || failed) {
     return (
@@ -47,11 +52,16 @@ export function Image({
   }
 
   return (
-    <View className={clsx('overflow-hidden bg-skeleton', className)} style={style}>
+    <View
+      className={clsx('overflow-hidden', !loaded && 'bg-skeleton', className)}
+      style={style}
+    >
       <ExpoImage
         source={{ uri: source }}
         contentFit={contentFit}
         cachePolicy="memory-disk"
+        loading={loading}
+        onLoad={() => setLoaded(true)}
         onError={() => setFailed(true)}
         style={StyleSheet.absoluteFill}
         accessibilityLabel={alt}

@@ -2,13 +2,16 @@ import type { Page } from '@playwright/test';
 
 import {
   banners,
+  cart,
   categories,
   currentUser,
+  freebie,
   home,
   loginInvalid,
   loginSuccess,
   loginUnverified,
   product,
+  productGallery,
 } from '../fixtures';
 
 /**
@@ -116,7 +119,8 @@ export async function mockBackend(
     });
   });
 
-  // Product detail: id 1 is the known product; any other id is a 404.
+  // Product detail: id 1 is the known product; id 2 is a freebie; id 3 is a
+  // gallery product with five images; anything else is a 404.
   await page.route(/\/getProduct\//, async (route) => {
     const url = new URL(route.request().url());
     const id = url.pathname.split('/').pop();
@@ -125,6 +129,22 @@ export async function mockBackend(
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(product),
+      });
+      return;
+    }
+    if (id === '2') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(freebie),
+      });
+      return;
+    }
+    if (id === '3') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(productGallery),
       });
       return;
     }
@@ -140,6 +160,53 @@ export async function mockBackend(
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ status: true, message: 'View added', views: 4 }),
+    });
+  });
+
+  await page.route(`${API_URL}/getCart`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(cart),
+    });
+  });
+
+  await page.route(`${API_URL}/addToCart`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        message: 'Successfully added to cart.',
+      }),
+    });
+  });
+
+  await page.route(`${API_URL}/updateCart`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        status: true,
+        message: 'Successfully updated cart item.',
+        data: {
+          id: 738,
+          units: 2,
+          size_id: 1,
+          color_id: 3,
+          isCustom: '0',
+          available_id: null,
+          product: product.data,
+        },
+      }),
+    });
+  });
+
+  await page.route(`${API_URL}/removeFromCart`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ status: true, message: 'ok' }),
     });
   });
 

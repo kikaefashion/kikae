@@ -1,0 +1,33 @@
+{
+  "status": true,
+  "message": "Successfully retrieved product.",
+  "data": {
+    "id": 3,
+    "old_price": 20000,
+    "price": 15000,
+    "name": "Gallery dress",
+    "status": "approved",
+    "description": "A dress with five gallery photos.",
+    "units": 5,
+    "thrift": false,
+    "media": [
+      { "url": "profile-pic/gallery-1.webp" },
+      { "url": "profile-pic/gallery-2.webp" },
+      { "url": "profile-pic/gallery-3.webp" },
+      { "url": "profile-pic/gallery-4.webp" },
+      { "url": "profile-pic/gallery-5.webp" }
+    ],
+    "sizes": [{ "id": 1, "size": "S" }],
+    "colours": [{ "id": 3, "name": "Red" }],
+    "ratings": [{ "rating": 5 }],
+    "store": {
+      "id": "store-1",
+      "name": "Ada Threads",
+      "logo": "profile-pic/logo.webp"
+    },
+    "likes": [],
+    "isMakeup": 0,
+    "coverages": [],
+    "availability": []
+  }
+}

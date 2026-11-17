@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { AccessibilityInfo, View } from 'react-native';
+import { AccessibilityInfo, Pressable, View } from 'react-native';
 
 import { type TextColor } from '@/components/ui/colors';
 import { Icon, type IconName } from '@/components/ui/icon';
@@ -33,18 +33,29 @@ const variantColor: Record<ToastVariant, TextColor> = {
 /** Auto-dismiss within the 4–5s window (components.md §4). */
 const DEFAULT_DURATION = 4500;
 
+export interface ToastAction {
+  label: string;
+  onPress: () => void;
+}
+
+export interface ToastOptions {
+  duration?: number;
+  action?: ToastAction;
+}
+
 interface ToastMessage {
   id: number;
   variant: ToastVariant;
   message: string;
+  action?: ToastAction;
 }
 
 export interface ToastContextValue {
-  show: (variant: ToastVariant, message: string, duration?: number) => void;
-  success: (message: string, duration?: number) => void;
-  error: (message: string, duration?: number) => void;
-  info: (message: string, duration?: number) => void;
-  warning: (message: string, duration?: number) => void;
+  show: (variant: ToastVariant, message: string, options?: ToastOptions) => void;
+  success: (message: string, options?: ToastOptions) => void;
+  error: (message: string, options?: ToastOptions) => void;
+  info: (message: string, options?: ToastOptions) => void;
+  warning: (message: string, options?: ToastOptions) => void;
   dismiss: () => void;
 }
 
@@ -76,10 +87,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, [clearTimer]);
 
   const show = useCallback(
-    (variant: ToastVariant, message: string, duration = DEFAULT_DURATION) => {
+    (variant: ToastVariant, message: string, options: ToastOptions = {}) => {
+      const { duration = DEFAULT_DURATION, action } = options;
       clearTimer();
       idRef.current += 1;
-      setToast({ id: idRef.current, variant, message });
+      setToast({ id: idRef.current, variant, message, action });
       timerRef.current = setTimeout(() => {
         timerRef.current = null;
         setToast(null);
@@ -101,10 +113,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ToastContextValue>(
     () => ({
       show,
-      success: (message, duration) => show('success', message, duration),
-      error: (message, duration) => show('error', message, duration),
-      info: (message, duration) => show('info', message, duration),
-      warning: (message, duration) => show('warning', message, duration),
+      success: (message, options) => show('success', message, options),
+      error: (message, options) => show('error', message, options),
+      info: (message, options) => show('info', message, options),
+      warning: (message, options) => show('warning', message, options),
       dismiss,
     }),
     [show, dismiss],
@@ -113,12 +125,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <ToastView toast={toast} />
+      <ToastView toast={toast} onDismiss={dismiss} />
     </ToastContext.Provider>
   );
 }
 
-function ToastView({ toast }: { toast: ToastMessage | null }) {
+function ToastView({
+  toast,
+  onDismiss,
+}: {
+  toast: ToastMessage | null;
+  onDismiss: () => void;
+}) {
   if (!toast) return null;
 
   return (
@@ -127,7 +145,6 @@ function ToastView({ toast }: { toast: ToastMessage | null }) {
       className="absolute inset-x-0 bottom-0 items-center px-16 pb-16"
     >
       <View
-        pointerEvents="none"
         accessible
         accessibilityRole="alert"
         accessibilityLiveRegion={
@@ -144,6 +161,27 @@ function ToastView({ toast }: { toast: ToastMessage | null }) {
         <Text variant="callout" color="fg" maxFontSizeMultiplier={1.3}>
           {toast.message}
         </Text>
+        {toast.action ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={toast.action.label}
+            onPress={() => {
+              toast.action?.onPress();
+              onDismiss();
+            }}
+            className="ml-4 shrink-0"
+          >
+            <Text
+              variant="callout"
+              color="fg"
+              weight="medium"
+              maxFontSizeMultiplier={1.3}
+              className="underline"
+            >
+              {toast.action.label}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );

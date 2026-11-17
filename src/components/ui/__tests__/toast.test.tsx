@@ -37,7 +37,7 @@ function Trigger() {
       </Pressable>
       <Pressable
         accessibilityRole="button"
-        onPress={() => toast.show('info', 'Short lived', 50)}
+        onPress={() => toast.show('info', 'Short lived', { duration: 50 })}
       >
         <Text>short</Text>
       </Pressable>

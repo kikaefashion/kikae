@@ -1,12 +1,5 @@
-import { DocumentTitle } from '@/components/document-title';
-import { ComingSoonScreen } from '@/components/navigation/screen-layout';
-import { PAGE_TITLES } from '@/config/titles';
+import { CartScreen } from '@/features/cart/cart-screen';
 
-export default function CartScreen() {
-  return (
-    <>
-      <DocumentTitle title={PAGE_TITLES.cart} />
-      <ComingSoonScreen title={PAGE_TITLES.cart} />
-    </>
-  );
+export default function CartRoute() {
+  return <CartScreen />;
 }

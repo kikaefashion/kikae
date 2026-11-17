@@ -35,8 +35,8 @@ export const ProductDetailSchema = z.object({
   thrift: bool.nullable(),
   description: z.string().nullable().optional().default(''),
   media: list(z.object({ url: z.string().nullable() })),
-  sizes: list(z.object({ size: z.string() })),
-  colours: list(z.object({ name: z.string() })),
+  sizes: list(z.object({ id, size: z.string() })),
+  colours: list(z.object({ id, name: z.string() })),
   ratings: list(z.object({ rating: z.coerce.number() })),
   store: z
     .object({ id, name: z.string(), logo: z.string().nullable() })

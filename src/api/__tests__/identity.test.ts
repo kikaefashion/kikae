@@ -20,6 +20,18 @@ describe('identity', () => {
     expect(hasSession()).toBe(true);
   });
 
+  it('preserves a string userId without coercion', () => {
+    setSession({ token: 't', userId: 'user-abc' });
+
+    expect(getUserId()).toBe('user-abc');
+  });
+
+  it('preserves a number userId without coercion', () => {
+    setSession({ token: 't', userId: 264 });
+
+    expect(getUserId()).toBe(264);
+  });
+
   it('clears the session', () => {
     setSession({ token: 't', userId: 7 });
 

@@ -3,6 +3,7 @@ import { http, HttpResponse } from 'msw';
 import type { ProductCategory } from '@/api/endpoints/categories';
 import type { CurrentUser } from '@/api/endpoints/current-user';
 import type { Banner } from '@/api/endpoints/banners';
+import type { CartLine } from '@/api/endpoints/cart';
 import type { Category, HomeData, Product } from '@/api/endpoints/home';
 import type { ProductDetail } from '@/api/endpoints/product';
 
@@ -233,8 +234,8 @@ export const productDetail: ProductDetail = {
   thrift: null,
   description: 'nothing special',
   media: [{ url: 'profile-pic/4wVdoWCrqS2PmgGlZoie9Xp7F16imsbirYhVuZgf.webp' }],
-  sizes: [{ size: 'S' }, { size: 'M' }],
-  colours: [{ name: 'Red' }],
+  sizes: [{ id: 1, size: 'S' }, { id: 2, size: 'M' }],
+  colours: [{ id: 3, name: 'Red' }],
   ratings: [{ rating: 5 }],
   store: {
     id: 'a11501f1-a498-43d0-8113-3bb43cf7ae4b',
@@ -247,6 +248,83 @@ export const productDetail: ProductDetail = {
   coverages: [{ area: 'Ugbowo', fee: 5000 }],
   availability: [{ dated: 'Sunday,06:00 - 18:00', available: true }],
 };
+
+/** Normal (non-makeup) product fixture — add-to-cartable. */
+export const normalProduct: ProductDetail = {
+  id: 1,
+  name: 'Ankara dress',
+  price: 12000,
+  old_price: 15000,
+  status: 'approved',
+  units: 5,
+  thrift: true,
+  description: 'A hand-dyed ankara maxi dress, made in Lagos.',
+  media: [{ url: 'profile-pic/dress.webp' }],
+  sizes: [{ id: 1, size: 'S' }, { id: 2, size: 'M' }],
+  colours: [{ id: 3, name: 'Red' }],
+  ratings: [{ rating: 5 }],
+  store: { id: 'store-1', name: 'Ada Threads', logo: 'profile-pic/logo.webp' },
+  likes: [],
+  isMakeup: false,
+  coverages: [],
+  availability: [],
+};
+
+/** Freebie (`price === 0`) fixture — never added to the cart. */
+export const freebieProduct: ProductDetail = {
+  ...normalProduct,
+  id: 2,
+  name: 'Free tote bag',
+  price: 0,
+  old_price: null,
+};
+
+/** One sanitized `getCart` line (no private shop/user fields). */
+export const cartLine: CartLine = {
+  id: 738,
+  units: 1,
+  size_id: 425,
+  color_id: 476,
+  isCustom: '0',
+  available_id: null,
+  product: {
+    id: 243,
+    name: 'Black Printed Tribal Pattern Hoodie',
+    price: 20000,
+    old_price: 27000,
+    units: 10,
+    status: 'approved',
+    isMakeup: false,
+    thrift: false,
+    media: [{ url: 'profile-pic/product-243.webp' }],
+    sizes: [{ id: 424, size: '42' }, { id: 425, size: '30' }],
+    colours: [{ id: 476, name: 'Black' }],
+  },
+};
+
+export const getCartSuccess = http.post(`${API_URL}/getCart`, () =>
+  HttpResponse.json({ status: true, message: 'ok', data: [cartLine] }),
+);
+
+export const getCartEmpty = http.post(`${API_URL}/getCart`, () =>
+  HttpResponse.json({ status: true, message: 'ok', data: [] }),
+);
+
+export const addToCartSuccess = http.post(`${API_URL}/addToCart`, () =>
+  HttpResponse.json({ success: true, message: 'Successfully added to cart.' }),
+);
+
+export const updateCartSuccess = http.post(`${API_URL}/updateCart`, () =>
+  HttpResponse.json({
+    status: true,
+    message: 'ok',
+    data: { ...cartLine, units: 3 },
+  }),
+);
+
+export const removeFromCartSuccess = http.post(`${API_URL}/removeFromCart`, () =>
+  HttpResponse.json({ status: true, message: 'ok' }),
+);
 
 const productEnvelope = (data: unknown) =>
   HttpResponse.json({ status: true, message: 'ok', data });

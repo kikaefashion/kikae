@@ -73,11 +73,21 @@ store.balance − unsettledAmount`). See `docs/backend-findings.md` (Backlog che
 
 ## Payments (F8)
 
-- **Server-initiated payment recovery** — a short-lived server session keyed by `tx_ref` as the
-  web equivalent of the native SecureStore reference, so a web payment can be resumed after a
-  browser close/refresh without relying on `localStorage`. (Backend scan: the `Payment` row keyed by
-  `reference` is the recovery anchor and `/payments/verify/{reference}` is idempotent/re-runnable —
-  no dedicated `tx_ref` session endpoint yet.)
+- **Server-initiated payment recovery** — **superseded**: web stores the pending reference list in
+  `localStorage` (references only, never tokens or amounts) and native uses SecureStore; no `tx_ref`
+  server session is needed. `/payments/verify/{reference}` stays the idempotent recovery anchor.
+- **Unauthenticated `/payments/verify/{reference}`** — accepted for now (the reference is the
+  secret); revisit scoping by `user_id` later.
+- **Fold the delivery pickers** — consider one `/getPayment` payload (state→area→logistic) to cut
+  round-trips.
+- **Stock running out between preflight and verify** — ask the backend how mid-flow stock loss is
+  handled (verify decrements stock).
+
+## Freebies
+
+- **Per-user freebie claim limit** — enforce server-side (the client must not be the guard).
+- **`freebieExpires` handling** — a store field present in samples as `"0"`; semantics UNVERIFIED.
+- **Claimed freebie history** — a per-user list of claimed freebies (analogous: makeup booking).
 
 ## Typography
 
@@ -128,6 +138,9 @@ store.balance − unsettledAmount`). See `docs/backend-findings.md` (Backlog che
   `/maintanance-status`.
 - Resolve schema drift and add the missing `payments`, `device_tokens`, `reviews` create-migrations.
 - Return a machine-readable error code for login failure (e.g. `unverified`).
+
+**(d) Likes**
+-Likes (needs backend): (1) when a valid Bearer token is sent, GET /getProduct/{id} and customer/v2/home return liked_by_me (boolean) per product, plus likes_count, and drop the likes[] array (it exposes every user's id and bloats the payload); (2) like is idempotent; (3) support unlike. Until then the heart may misbehave.
 
 **Later (post-release):** pagination, unlike, conversation list/unread/read-receipts, image
 resizing/CDN, structured area/LGA, login rate-limiting, order dispute/cancellation states,

@@ -11,8 +11,8 @@
     "units": 5,
     "thrift": true,
     "media": [{ "url": "profile-pic/dress.webp" }],
-    "sizes": [{ "size": "S" }, { "size": "M" }],
-    "colours": [{ "name": "Red" }],
+    "sizes": [{ "id": 1, "size": "S" }, { "id": 2, "size": "M" }],
+    "colours": [{ "id": 3, "name": "Red" }],
     "ratings": [{ "rating": 5 }],
     "store": {
       "id": "store-1",

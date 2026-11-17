@@ -1,10 +1,15 @@
 import { clearSession } from '@/api/identity';
+import {
+  fetchCurrentUser,
+  type CurrentUser,
+} from '@/api/endpoints/current-user';
 
 import {
   endSession,
   getSessionStatus,
   getUserId,
   hasSession,
+  hydrateSessionUser,
   isGuest,
   persistSession,
   restoreSession,
@@ -19,8 +24,19 @@ jest.mock('../token-storage', () => ({
     getToken: jest.fn(),
     setToken: jest.fn(),
     removeToken: jest.fn(),
+    getUserId: jest.fn(),
+    setUserId: jest.fn(),
+    removeUserId: jest.fn(),
   },
 }));
+
+jest.mock('@/api/endpoints/current-user', () => ({
+  fetchCurrentUser: jest.fn(),
+}));
+
+const mockFetchCurrentUser = fetchCurrentUser as jest.MockedFunction<
+  typeof fetchCurrentUser
+>;
 
 const mockGetToken = tokenStorage.getToken as jest.MockedFunction<
   typeof tokenStorage.getToken
@@ -31,11 +47,21 @@ const mockSetToken = tokenStorage.setToken as jest.MockedFunction<
 const mockRemoveToken = tokenStorage.removeToken as jest.MockedFunction<
   typeof tokenStorage.removeToken
 >;
+const mockGetUserId = tokenStorage.getUserId as jest.MockedFunction<
+  typeof tokenStorage.getUserId
+>;
+const mockSetUserId = tokenStorage.setUserId as jest.MockedFunction<
+  typeof tokenStorage.setUserId
+>;
+const mockRemoveUserId = tokenStorage.removeUserId as jest.MockedFunction<
+  typeof tokenStorage.removeUserId
+>;
 
 beforeEach(() => {
   jest.clearAllMocks();
   clearSession();
   setGuest(false);
+  mockGetUserId.mockResolvedValue(null);
 });
 
 describe('session-store', () => {
@@ -45,6 +71,16 @@ describe('session-store', () => {
     await restoreSession();
 
     expect(hasSession()).toBe(true);
+  });
+
+  it('restores the persisted user id alongside the token', async () => {
+    mockGetToken.mockResolvedValue('persisted-token');
+    mockGetUserId.mockResolvedValue(264);
+
+    await restoreSession();
+
+    expect(hasSession()).toBe(true);
+    expect(getUserId()).toBe(264);
   });
 
   it('stays signed out when nothing is persisted', async () => {
@@ -59,8 +95,15 @@ describe('session-store', () => {
     await persistSession({ token: 't', userId: 42 });
 
     expect(mockSetToken).toHaveBeenCalledWith('t');
+    expect(mockSetUserId).toHaveBeenCalledWith(42);
     expect(getUserId()).toBe(42);
     expect(hasSession()).toBe(true);
+  });
+
+  it('does not persist a null user id', async () => {
+    await persistSession({ token: 't', userId: null });
+
+    expect(mockSetUserId).not.toHaveBeenCalled();
   });
 
   it('ends the session and clears storage', async () => {
@@ -69,6 +112,7 @@ describe('session-store', () => {
     await endSession();
 
     expect(mockRemoveToken).toHaveBeenCalled();
+    expect(mockRemoveUserId).toHaveBeenCalled();
     expect(hasSession()).toBe(false);
     expect(getUserId()).toBeNull();
   });
@@ -145,5 +189,32 @@ describe('session-store', () => {
     setSessionUserId(7);
 
     expect(getUserId()).toBe(7);
+    expect(mockSetUserId).toHaveBeenCalledWith(7);
+  });
+
+  it('hydrates the user id when a token exists without a stored id', async () => {
+    await persistSession({ token: 't', userId: null });
+    mockFetchCurrentUser.mockResolvedValue({ id: 264 } as CurrentUser);
+
+    await expect(hydrateSessionUser()).resolves.toBe(true);
+
+    expect(getUserId()).toBe(264);
+  });
+
+  it('leaves the user id null when hydration fails', async () => {
+    await persistSession({ token: 't', userId: null });
+    mockFetchCurrentUser.mockRejectedValue(new Error('offline'));
+
+    await expect(hydrateSessionUser()).resolves.toBe(false);
+
+    expect(getUserId()).toBeNull();
+  });
+
+  it('skips hydration when the user id is already known', async () => {
+    await persistSession({ token: 't', userId: 42 });
+
+    await expect(hydrateSessionUser()).resolves.toBe(true);
+
+    expect(mockFetchCurrentUser).not.toHaveBeenCalled();
   });
 });

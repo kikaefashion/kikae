@@ -16,6 +16,10 @@ export interface Capabilities {
   hasConversationList: boolean;
   /** Google sign-in (F1b) — wired in a later task. */
   googleSignIn: boolean;
+  /** Add to cart + cart screen — flipped on by the cart slice. */
+  cartEnabled: boolean;
+  /** Custom-size order entry — deferred (F13). */
+  customSizeEnabled: boolean;
 }
 
 export const capabilities: Capabilities = {
@@ -24,4 +28,6 @@ export const capabilities: Capabilities = {
   canResizeImages: false,
   hasConversationList: false,
   googleSignIn: false,
+  cartEnabled: true,
+  customSizeEnabled: false,
 };

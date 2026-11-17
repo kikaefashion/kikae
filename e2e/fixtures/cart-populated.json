@@ -1,0 +1,30 @@
+{
+  "status": true,
+  "message": "Successfully retrieved user's cart.",
+  "data": [
+    {
+      "id": 738,
+      "units": 1,
+      "size_id": 1,
+      "color_id": 3,
+      "isCustom": "0",
+      "available_id": null,
+      "product": {
+        "id": 1,
+        "name": "Ankara dress",
+        "price": 12000,
+        "old_price": 15000,
+        "units": 5,
+        "status": "approved",
+        "isMakeup": 0,
+        "thrift": true,
+        "media": [{ "url": "profile-pic/dress.webp" }],
+        "sizes": [
+          { "id": 1, "size": "S" },
+          { "id": 2, "size": "M" }
+        ],
+        "colours": [{ "id": 3, "name": "Red" }]
+      }
+    }
+  ]
+}
