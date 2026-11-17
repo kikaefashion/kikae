@@ -80,10 +80,16 @@ export function useAddToCart() {
           return { lines, failedCount: current?.failedCount ?? 0 };
         });
       } else {
-        void queryClient.invalidateQueries({
-          queryKey: queryKeys.cart,
-          refetchType: 'all',
-        });
+        // A fresh line returns no line, so the cart must be re-read. Cancel any
+        // in-flight read first: `invalidateQueries` cannot cancel a fetch that
+        // has no data yet, so a slow initial `getCart` (still resolving empty)
+        // would otherwise absorb the refetch and leave the cart empty.
+        void queryClient.cancelQueries({ queryKey: queryKeys.cart }).then(() =>
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.cart,
+            refetchType: 'all',
+          }),
+        );
       }
       toast.success('Added to cart', {
         action: { label: 'View cart', onPress: () => router.push('/cart') },

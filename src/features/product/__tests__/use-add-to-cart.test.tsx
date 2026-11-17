@@ -69,4 +69,46 @@ describe('useAddToCart', () => {
     expect(getCartCalls).toBe(2);
     await screen.findByText('stale:false');
   });
+
+  it('refetches the cart after a fresh add even when the initial read is still in-flight', async () => {
+    setSession({ token: 't', userId: 1 });
+    let getCartCalls = 0;
+    const initial = {
+      resolve: (_response: Response): void => undefined,
+    };
+    const initialPending = new Promise<Response>((resolve) => {
+      initial.resolve = resolve;
+    });
+
+    server.use(
+      http.post(`${API_URL}/getCart`, () => {
+        getCartCalls += 1;
+        if (getCartCalls === 1) return initialPending;
+        return HttpResponse.json({
+          status: true,
+          message: 'ok',
+          data: [cartLine],
+        });
+      }),
+      addToCartSuccess,
+    );
+
+    await render(<Harness product={normalProduct} />);
+
+    // The initial cart read is still pending, so the cart stays empty.
+    expect(screen.getByText('count:0')).toBeOnTheScreen();
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Add' }));
+
+    // The add must start a fresh read instead of waiting on the stale pending
+    // one, so the cart shows the added line.
+    await screen.findByText('count:1');
+    expect(getCartCalls).toBe(2);
+
+    // Settling the stale pending read empty afterwards must not clobber it.
+    initial.resolve(
+      HttpResponse.json({ status: true, message: 'ok', data: [] }),
+    );
+    await screen.findByText('count:1');
+  });
 });
