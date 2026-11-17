@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Carousel } from '@/components/ui/carousel';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Chip } from '@/components/ui/chip';
+import { Dialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Gallery } from '@/components/ui/gallery';
@@ -128,6 +129,47 @@ function ToastDemo() {
       >
         Warning
       </Button>
+    </Row>
+  );
+}
+
+function DialogDemo() {
+  const [open, setOpen] = useState<'confirm' | 'destructive' | null>(null);
+  return (
+    <Row>
+      <Button size="sm" variant="secondary" onPress={() => setOpen('confirm')}>
+        Confirm
+      </Button>
+      <Button
+        size="sm"
+        variant="secondary"
+        onPress={() => setOpen('destructive')}
+      >
+        Destructive
+      </Button>
+      <Dialog
+        visible={open === 'confirm'}
+        onClose={() => setOpen(null)}
+        label="Confirm example"
+        title="Discard changes?"
+        body="Your unsaved changes will be lost."
+        actions={[
+          { label: 'Cancel', onPress: () => setOpen(null) },
+          { label: 'Discard', variant: 'danger', onPress: () => setOpen(null) },
+        ]}
+      />
+      <Dialog
+        visible={open === 'destructive'}
+        onClose={() => setOpen(null)}
+        label="Remove example"
+        title="Remove item?"
+        body="This can't be undone."
+        destructive
+        actions={[
+          { label: 'Cancel', onPress: () => setOpen(null) },
+          { label: 'Remove', variant: 'danger', onPress: () => setOpen(null) },
+        ]}
+      />
     </Row>
   );
 }
@@ -377,6 +419,10 @@ export default function DesignSystemContent() {
 
           <Section title="Toast">
             <ToastDemo />
+          </Section>
+
+          <Section title="Dialog">
+            <DialogDemo />
           </Section>
 
           <Section title="SectionHeader">

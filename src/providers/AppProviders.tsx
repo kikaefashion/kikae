@@ -11,7 +11,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createQueryClient } from '@/api/query-client';
 import { ToastProvider } from '@/components/ui/toast';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { restoreSession } from '@/session/session-store';
+import { hydrateSessionUser, restoreSession } from '@/session/session-store';
 
 /** Poppins 400/500/700 only — `display: swap` avoids invisible text on web. */
 const POPPINS_FONTS: Record<string, FontSource> = {
@@ -34,7 +34,17 @@ export function AppProviders({ children }: { children: ReactNode }) {
   const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
-    void restoreSession().finally(() => setSessionReady(true));
+    void (async () => {
+      try {
+        await restoreSession();
+      } finally {
+        setSessionReady(true);
+        // Backfill the user id for sessions persisted before the id was stored
+        // (fire-and-forget; the cart query waits on the id instead of fetching
+        // with `user_id: null`).
+        void hydrateSessionUser();
+      }
+    })();
   }, []);
 
   const fontsReady = fontsLoaded || fontError !== null;

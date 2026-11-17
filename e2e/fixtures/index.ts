@@ -157,8 +157,18 @@ const ProductDetailSchema = z.object({
   units: z.number().int(),
   thrift: z.boolean().nullable(),
   media: z.array(z.object({ url: z.string().nullable() })),
-  sizes: z.array(z.object({ size: z.string() })),
-  colours: z.array(z.object({ name: z.string() })),
+  sizes: z.array(
+    z.object({
+      id: z.union([z.number().int(), z.string()]),
+      size: z.string(),
+    }),
+  ),
+  colours: z.array(
+    z.object({
+      id: z.union([z.number().int(), z.string()]),
+      name: z.string(),
+    }),
+  ),
   ratings: z.array(z.object({ rating: z.number() })),
   store: z.object({
     id: z.union([z.number().int(), z.string()]),
@@ -189,6 +199,46 @@ const ProductEnvelopeSchema = z.object({
   data: ProductDetailSchema,
 });
 
+const CartSizeSchema = z.object({
+  id: z.union([z.number().int(), z.string()]),
+  size: z.string(),
+});
+
+const CartColourSchema = z.object({
+  id: z.union([z.number().int(), z.string()]),
+  name: z.string(),
+});
+
+const CartProductSchema = z.object({
+  id: z.union([z.number().int(), z.string()]),
+  name: z.string(),
+  price: z.number(),
+  old_price: z.number().nullable(),
+  units: z.number().int(),
+  status: z.string(),
+  isMakeup: z.union([z.boolean(), z.number(), z.null()]).optional(),
+  thrift: z.boolean().nullable(),
+  media: z.array(z.object({ url: z.string().nullable() })),
+  sizes: z.array(CartSizeSchema),
+  colours: z.array(CartColourSchema),
+});
+
+const CartLineSchema = z.object({
+  id: z.union([z.number().int(), z.string()]),
+  units: z.number().int(),
+  size_id: z.union([z.number().int(), z.string()]).nullable().optional(),
+  color_id: z.union([z.number().int(), z.string()]).nullable().optional(),
+  isCustom: z.string(),
+  available_id: z.union([z.number().int(), z.string()]).nullable().optional(),
+  product: CartProductSchema,
+});
+
+const CartEnvelopeSchema = z.object({
+  status: z.boolean(),
+  message: z.string(),
+  data: z.array(CartLineSchema),
+});
+
 function load<T>(filename: string, schema: z.ZodType<T>): T {
   const raw = readFileSync(join(FIXTURES_DIR, filename), 'utf8');
   return schema.parse(JSON.parse(raw));
@@ -202,7 +252,15 @@ export const categories = load('categories.json', CategoriesEnvelopeSchema);
 export const home = load('home.json', HomeEnvelopeSchema);
 export const banners = load('banners.json', BannerEnvelopeSchema);
 export const product = load('product.json', ProductEnvelopeSchema);
+export const freebie = load('freebie.json', ProductEnvelopeSchema);
+export const productGallery = load(
+  'product-gallery.json',
+  ProductEnvelopeSchema,
+);
+export const cart = load('cart.json', CartEnvelopeSchema);
+export const cartPopulated = load('cart-populated.json', CartEnvelopeSchema);
 
 export type CurrentUser = z.infer<typeof CurrentUserSchema>;
 export type ProductCategory = z.infer<typeof ProductCategorySchema>;
 export type ProductDetail = z.infer<typeof ProductDetailSchema>;
+export type CartLine = z.infer<typeof CartLineSchema>;

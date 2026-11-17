@@ -1,0 +1,144 @@
+import { z } from 'zod';
+
+import { request, requestData } from '../client';
+import { bool, id, money } from '../helpers';
+import { getUserId } from '../identity';
+
+/** Coerces a missing or `null` list to `[]` — the backend nulls empty relations. */
+function list<T extends z.ZodTypeAny>(item: T): z.ZodType<z.infer<T>[]> {
+  return z
+    .array(item)
+    .nullish()
+    .transform((value) => value ?? []);
+}
+
+/** Product embedded in each cart line — only the fields the app uses. */
+const CartProductSchema = z.object({
+  id,
+  name: z.string(),
+  price: money,
+  old_price: money.nullable(),
+  units: z.coerce.number().int().nonnegative(),
+  status: z.string(),
+  isMakeup: bool.optional().default(false),
+  thrift: bool.nullable(),
+  media: list(z.object({ url: z.string().nullable() })),
+  sizes: list(z.object({ id, size: z.string() })),
+  colours: list(z.object({ id, name: z.string() })),
+});
+
+/**
+ * One `getCart` line. Declares only what the app reads; Zod strips the private
+ * store-owner data the backend embeds under `product.shop` / `product.shop.user`
+ * (owner email, phone, hash, balance, addresses), the line-level `user_id` /
+ * `product_id`, and every custom-measurement field — so none of it reaches state.
+ */
+export const CartLineSchema = z.object({
+  id,
+  units: z.coerce.number().int().nonnegative(),
+  size_id: id.nullable().optional(),
+  color_id: id.nullable().optional(),
+  isCustom: z.string(),
+  available_id: id.nullable().optional(),
+  product: CartProductSchema,
+});
+
+export type CartLine = z.infer<typeof CartLineSchema>;
+
+/**
+ * `POST /addToCart` (auth). A normal item sends exactly the legacy body —
+ * `{units, product_id, size_id, color_id}` — with no measurement fields and no
+ * `isCustom`. The response flag is `success`, not `status`.
+ */
+export function addToCart(input: {
+  units: number;
+  productId: string | number;
+  sizeId: string | number;
+  colorId: string | number;
+}): Promise<unknown> {
+  return requestData({
+    base: 'api',
+    path: '/addToCart',
+    method: 'POST',
+    auth: true,
+    body: {
+      units: input.units,
+      product_id: input.productId,
+      size_id: input.sizeId,
+      color_id: input.colorId,
+    },
+    dataSchema: z.unknown(),
+  });
+}
+
+/** Parsed `getCart` result: the valid lines plus a count of lines that failed. */
+export interface CartResult {
+  lines: CartLine[];
+  failedCount: number;
+}
+
+/**
+ * `POST /getCart` — `{user_id}`; the id comes from the identity module and is
+ * sent with its exact type (string ids stay strings, number ids stay numbers).
+ *
+ * Each line is parsed separately so one malformed line never hides the valid
+ * ones: the screen renders the good lines and reports the failure. A response
+ * whose `data` is not an array still throws (error state with Retry).
+ */
+export async function fetchCart(signal?: AbortSignal): Promise<CartResult> {
+  const raw = await requestData<unknown[]>({
+    base: 'api',
+    path: '/getCart',
+    method: 'POST',
+    body: { user_id: getUserId() },
+    signal,
+    dataSchema: z
+      .array(z.unknown())
+      .nullish()
+      .transform((value) => value ?? []),
+  });
+
+  const lines: CartLine[] = [];
+  let failedCount = 0;
+  for (const entry of raw) {
+    const parsed = CartLineSchema.safeParse(entry);
+    if (parsed.success) {
+      lines.push(parsed.data);
+    } else {
+      failedCount += 1;
+    }
+  }
+
+  return { lines, failedCount };
+}
+
+/**
+ * `POST /updateCart` — `{units, user_id, id, product_id}`. Returns the updated
+ * line, which settles the `['cart']` cache without a `getCart` refetch.
+ */
+export function updateCart(
+  id: string | number,
+  units: number,
+  productId: string | number,
+): Promise<CartLine> {
+  return requestData({
+    base: 'api',
+    path: '/updateCart',
+    method: 'POST',
+    body: { units, user_id: getUserId(), id, product_id: productId },
+    dataSchema: CartLineSchema,
+  });
+}
+
+/**
+ * `POST /removeFromCart` — `{id}`. Response shape is UNVERIFIED, so the client
+ * tolerates an empty or minimal body (transport errors still throw).
+ */
+export async function removeFromCart(id: string | number): Promise<void> {
+  await request({
+    base: 'api',
+    path: '/removeFromCart',
+    method: 'POST',
+    body: { id },
+  });
+}

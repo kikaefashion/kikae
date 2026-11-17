@@ -25,4 +25,27 @@ describe('token-storage (native)', () => {
       'kikae.auth.token',
     );
   });
+
+  it('reads, writes and clears the user id', async () => {
+    (SecureStore.getItemAsync as jest.Mock).mockResolvedValue('264');
+
+    await expect(tokenStorage.getUserId()).resolves.toBe(264);
+
+    await tokenStorage.setUserId(42);
+    expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
+      'kikae.auth.userId',
+      '42',
+    );
+
+    await tokenStorage.removeUserId();
+    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
+      'kikae.auth.userId',
+    );
+  });
+
+  it('returns null for a missing user id', async () => {
+    (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+
+    await expect(tokenStorage.getUserId()).resolves.toBeNull();
+  });
 });

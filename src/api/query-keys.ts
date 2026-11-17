@@ -5,4 +5,5 @@ export const queryKeys = {
   home: ['home'] as const,
   banners: ['banners'] as const,
   product: (id: string | number) => ['product', id] as const,
+  cart: ['cart'] as const,
 };

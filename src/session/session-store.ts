@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
+import { fetchCurrentUser } from '@/api/endpoints/current-user';
 import {
   clearSession,
   getAuthToken,
@@ -45,11 +46,12 @@ export function getSessionStatus(): SessionStatus {
   return status;
 }
 
-/** Hydrates the in-memory session from persisted storage (userId stays null). */
+/** Hydrates the in-memory session (token + user id) from persisted storage. */
 export async function restoreSession(): Promise<void> {
   const token = await tokenStorage.getToken();
   if (token) {
-    setSession({ token, userId: null });
+    const userId = await tokenStorage.getUserId();
+    setSession({ token, userId });
   }
   setStatus(token ? 'signedIn' : 'signedOut');
 }
@@ -57,6 +59,9 @@ export async function restoreSession(): Promise<void> {
 export async function persistSession(session: Session): Promise<void> {
   setGuest(false);
   await tokenStorage.setToken(session.token);
+  if (session.userId !== null) {
+    await tokenStorage.setUserId(session.userId);
+  }
   setSession(session);
   setStatus('signedIn');
 }
@@ -64,6 +69,7 @@ export async function persistSession(session: Session): Promise<void> {
 export async function endSession(): Promise<void> {
   setGuest(false);
   await tokenStorage.removeToken();
+  await tokenStorage.removeUserId();
   clearSession();
   setStatus('signedOut');
 }
@@ -73,6 +79,7 @@ export function setSessionUserId(userId: string | number): void {
   const token = getAuthToken();
   if (token) {
     setSession({ token, userId });
+    void tokenStorage.setUserId(userId);
   }
 }
 
@@ -97,12 +104,46 @@ export function subscribe(listener: () => void): () => void {
 
 /** Reactive session status (drives the root route gate). */
 export function useSessionStatus(): SessionStatus {
-  return useSyncExternalStore(subscribe, () => status, () => status);
+  return useSyncExternalStore(
+    subscribe,
+    () => status,
+    () => status,
+  );
 }
 
 /** Reactive guest flag (drives the root route gate). */
 export function useIsGuest(): boolean {
-  return useSyncExternalStore(subscribe, () => guest, () => guest);
+  return useSyncExternalStore(
+    subscribe,
+    () => guest,
+    () => guest,
+  );
+}
+
+/** Reactive user id — null for guests or until `/currentUser` resolves. */
+export function useUserId(): string | number | null {
+  return useSyncExternalStore(
+    subscribeSession,
+    () => getUserId(),
+    () => getUserId(),
+  );
+}
+
+/**
+ * Backfills the user id when a persisted token exists but its id was not
+ * persisted (sessions stored before the id was persisted). No-op when signed
+ * out or already resolved. Resolves `true` on success; `false` leaves the id
+ * null so the caller can retry.
+ */
+export async function hydrateSessionUser(): Promise<boolean> {
+  if (!hasSession() || getUserId() !== null) return true;
+  try {
+    const user = await fetchCurrentUser();
+    setSessionUserId(user.id);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export { getAuthToken, getUserId, hasSession };

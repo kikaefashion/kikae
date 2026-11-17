@@ -47,4 +47,58 @@ test.describe('product detail', () => {
 
     await expect(page).toHaveURL(/\/login/);
   });
+
+  test('a guest Add to cart tap reaches /login', async ({ page }) => {
+    await openHomeAsGuest(page);
+    await page.getByText('Ankara dress').first().click();
+    await expect(page).toHaveURL(/\/product\/1/);
+    await expect(
+      page.getByRole('heading', { name: 'Ankara dress' }),
+    ).toBeVisible();
+
+    await page.getByRole('button', { name: 'Add to cart' }).click();
+
+    await expect(page).toHaveURL(/\/login/);
+  });
+
+  test('a signed-in add to cart shows the toast', async ({ page, context }) => {
+    await mockBackend(page, 'success');
+    await context.addInitScript(() => {
+      window.localStorage.setItem('kikae.auth.token', 'e2e-fake-token');
+      window.localStorage.setItem('kikae.auth.userId', '1');
+    });
+    await page.goto('/product/1');
+    await expect(
+      page.getByRole('heading', { name: 'Ankara dress' }),
+    ).toBeVisible();
+
+    await page.getByRole('button', { name: 'S', exact: true }).click();
+    await page.getByRole('button', { name: 'Red' }).click();
+    await page.getByRole('button', { name: 'Add to cart' }).click();
+
+    await expect(page.getByText('Added to cart')).toBeVisible();
+  });
+
+  test('a freebie navigates to the checkout stub with ids only', async ({
+    page,
+    context,
+  }) => {
+    await mockBackend(page, 'success');
+    await context.addInitScript(() => {
+      window.localStorage.setItem('kikae.auth.token', 'e2e-fake-token');
+      window.localStorage.setItem('kikae.auth.userId', '1');
+    });
+    await page.goto('/product/2');
+    await expect(
+      page.getByRole('heading', { name: 'Free tote bag' }),
+    ).toBeVisible();
+
+    await page.getByRole('button', { name: 'One size' }).click();
+    await page.getByRole('button', { name: 'Natural' }).click();
+    await page.getByRole('button', { name: 'Get for free' }).click();
+
+    await expect(page).toHaveURL(
+      /\/checkout\?mode=buyNow&product=2&size=4&color=5&units=1/,
+    );
+  });
 });

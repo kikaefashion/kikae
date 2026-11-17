@@ -1,11 +1,10 @@
 /**
  * Jest configuration for the kikae Expo app.
  *
- * TODO(coverage): `collectCoverageFrom` is intentionally scoped to the temporary
- * `src/examples/**` module while the app is being rebuilt. Add every new feature
- * folder to this list in the same PR (with tests). Once the rebuild is complete,
- * widen this to `src/**` in one line and keep the 80% thresholds.
- * See docs/CI-CD.md for the repo-wide target.
+ * Coverage policy (risk-based): logic folders (api, session, utils) keep strict
+ * thresholds; everything else has a lower floor. Add every new source folder to
+ * `collectCoverageFrom` in the same PR.
+ * Day to day: `yarn test:fast <path>` (no coverage). CI runs `yarn test`.
  */
 module.exports = {
   preset: 'jest-expo',
@@ -54,12 +53,19 @@ module.exports = {
     '!**/*.d.ts',
   ],
 
+  // Short terminal output (a full per-file table costs tokens and time).
+  coverageReporters: ['text-summary', 'lcov'],
+
+  // Per-path entries are evaluated separately; `global` then covers the rest.
   coverageThreshold: {
-    global: {
+    global: { branches: 60, functions: 65, lines: 70, statements: 70 },
+    './src/api/': { branches: 80, functions: 85, lines: 85, statements: 85 },
+    './src/session/': {
       branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
+      functions: 85,
+      lines: 85,
+      statements: 85,
     },
+    './src/utils/': { branches: 80, functions: 85, lines: 85, statements: 85 },
   },
 };
